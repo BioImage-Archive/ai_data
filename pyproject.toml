@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ai_data"
+name = "bia_vision"
 version = "0.1.1"
 description = ""
 authors = ["Craig <ctr26@ebi.ac.uk>"]
