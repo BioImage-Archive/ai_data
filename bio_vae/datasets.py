@@ -23,7 +23,7 @@ from torch.utils.data import DataLoader
 import torch.optim as optim
 from urllib.error import URLError
 
-from bio_vae.idr import IDRDataSet
+from ai_data.idr import IDRDataSet
 from PIL import Image, ImageSequence
 
 from torchvision.datasets.utils import (

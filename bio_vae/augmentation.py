@@ -1,3 +1,5 @@
+# Default augmentation for microscopy?
+
 import albumentations as A
 import cv2
 
