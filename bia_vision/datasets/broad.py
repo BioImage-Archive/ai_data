@@ -1,14 +1,13 @@
-from .torch import WebArchiveDataset
+# from . import WebArchiveDataset
+from dataclasses import dataclass
+from .utils import WebArchiveDataset
 
-
-class LookupInfo:
+@dataclass
+class BroadDataset(WebArchiveDataset):
     url: str
     md5: str
     dataset: str
-    filename: str
-
-
-class BroadDataset(WebArchiveDataset, LookupInfo):
+    filename: str 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

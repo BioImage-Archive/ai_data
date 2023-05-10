@@ -1,5 +1,3 @@
-import sys
-from torch.utils.data import random_split, DataLoader
 import glob
 import random
 import numpy as np
@@ -39,6 +37,7 @@ class DatasetFileList(Dataset):
     def getitem(self, index):
         try:
             x = Image.open(self.file_paths[index])
+            # TODO breaking issue with multicolour TIFFs
             x = ImageSequence.Iterator(x)
             if self.transform is not None:
                 x = self.transform(x[0])
@@ -81,8 +80,6 @@ class WebArchiveDataset(DatasetGlob):
         self.images_file = self.filename
         path_glob = f"{self.raw_folder}/**/*.png"
 
-        # self.image_paths = glob.glob(path_glob, recursive=True)
-        # self.transform = transform
         if download:
             self.download()
         super(WebArchiveDataset, self).__init__(path_glob, transform, **kwargs)
@@ -96,8 +93,6 @@ class WebArchiveDataset(DatasetGlob):
             return
 
         os.makedirs(self.raw_folder, exist_ok=True)
-
-        # download files
 
         try:
             print(f"Downloading {self.url}")

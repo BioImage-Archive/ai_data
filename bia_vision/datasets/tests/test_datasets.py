@@ -1,11 +1,11 @@
-from bio_vae import datasets
+from bia_vision import datasets
 import pytest
 
 
 @pytest.mark.parametrize(
     "dataset",
     [
-        datasets.BBBC010,
+        datasets.broad.BBBC010,
     ],
 )
 def test_download(dataset):
@@ -20,6 +20,7 @@ def test_download(dataset):
         "BBBC010",
     ],
 )
+
 def test_download(dataset):
     data = datasets.BroadDataset(dataset)
     assert len(data) > 0

@@ -1,4 +1,3 @@
+from .utils import WebArchiveDataset,DatasetFileList,DatasetGlob
 from .idr import IDRDataSet
-from .torch import DatasetGlob, WebArchiveDataset
-
-
+from .broad import BroadDataset
