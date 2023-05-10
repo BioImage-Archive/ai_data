@@ -30,4 +30,4 @@ dependencies:
   - pip
   - pip:
     - .
-    - nonechucks
+
