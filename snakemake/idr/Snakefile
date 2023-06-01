@@ -41,6 +41,8 @@ rule generate_image_ids:
     # "enviroment.yaml"
     output:
         image_ids=touch("image_ids.txt"),
+    resources:
+        mem_mb=8000,
     # shell:
     #     """
     #     touch {output.image_ids}
@@ -95,6 +97,8 @@ rule generate_image_ids:
 checkpoint get_image_metadata:
     # conda:
     # "enviroment.yaml"
+    resources:
+        mem_mb=32000,
     input:
         image_ids="image_ids.txt",
     output:
@@ -120,6 +124,8 @@ checkpoint get_image_metadata:
 rule download_images:
     # conda:
     # "enviroment.yaml"
+    resources:
+        mem_mb=1000,
     input:
         metadata="metadata.json",
     output:
