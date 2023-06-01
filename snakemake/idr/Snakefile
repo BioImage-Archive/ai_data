@@ -3,10 +3,27 @@ import os
 from tqdm import tqdm
 from idr import connection
 
-from idr_funs import get_image_ids_by_screen
+import idr_funs 
 from idr import connection
 
 screen_name = "idr0093-mueller-perturbation/screenA"
+
+def expand_from_metadata(wildcards):
+    checkpoint_output = checkpoints.get_image_metadata.get(**wildcards).output.metadata
+    with open(checkpoint_output) as f:
+        metadata = json.load(f)
+    input_files = []
+    for image_id, zct in tqdm(metadata.items()):
+        input_files.extend(
+            expand(
+                "results/{image_id}/{z}_{c}_{t}.tiff",
+                image_id=image_id,
+                z=range(zct["z"]),
+                c=range(zct["c"]),
+                t=range(zct["t"]),
+            )
+        )
+    return input_files
 
 rule all:
     # conda:
@@ -30,29 +47,41 @@ rule generate_image_ids:
     #     """
     run:
         conn = connection("idr.openmicroscopy.org")
-        image_ids = get_image_ids_by_screen(conn, screen_name)
+        # image_ids = get_image_ids_by_screen(conn, screen_name)
+
+        # # Get the query service
+        # query_service = conn.getQueryService()
+
+        # # Use HQL to get the images in the screen
+        # params = omero.sys.ParametersI()
+        # params.addString('screen_name', screen_name)
+
+        # query = (
+        #     "SELECT img.id FROM Image img "
+        #     "JOIN img.wellSamples ws "
+        #     "JOIN ws.well w "
+        #     "JOIN w.plate p "
+        #     "JOIN p.screenLinks sl "
+        #     "JOIN sl.parent s "
+        #     "WHERE s.name = :screen_name"
+        # )
+
+        # image_ids = query_service.projection(query, params)
+        # breakpoint()
+        screen = conn.getObject('Screen', attributes={'name': screen_name})
+        print("Getting plates")
+        plates = idr_funs.get_omero_children(screen)
+        print("Getting wells")
+        wells = idr_funs.get_children_from_list_of_objects(plates)
+        print("Getting imageids")
+        well_sampler = idr_funs.get_children_from_list_of_objects(wells)
+        # breakpoint()
+        # print("Getting plates")
+        image_ids = [x.image().id for x in well_sampler]
         with open(output.image_ids, "w") as f:
             f.write("\n".join(str(x) for x in image_ids))
         print("generate_image_ids: Done")
         conn._closeSession()
-
-
-def expand_from_metadata(wildcards):
-    checkpoint_output = checkpoints.get_image_metadata.get(**wildcards).output.metadata
-    with open(checkpoint_output) as f:
-        metadata = json.load(f)
-    input_files = []
-    for image_id, zct in tqdm(metadata.items()):
-        input_files.extend(
-            expand(
-                "results/{image_id}/{z}_{c}_{t}.tiff",
-                image_id=image_id,
-                z=range(zct["z"]),
-                c=range(zct["c"]),
-                t=range(zct["t"]),
-            )
-        )
-    return input_files
 
 
 # # def expand_wildcards_from_checkpoint(wildcards):

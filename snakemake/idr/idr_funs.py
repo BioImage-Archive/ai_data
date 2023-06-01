@@ -3,23 +3,32 @@ from idr import connection, images
 from tqdm import tqdm
 from PIL import Image
 
-def get_omero_children_id(blitz_object):
-    return [child.id for child in blitz_object.listChildren()]
+def get_omero_children(blitz_object):
+    return [child for child in blitz_object.listChildren()]
 
-def get_plate_ids_by_screen(conn,screen_name):
-    # Get the screen object
-    screen = conn.getObject('Screen', attributes={'name': screen_name})
+def get_children_from_list_of_objects(blitz_objects):
+    children = []
+    for obj in blitz_objects:
+        children.extend(get_omero_children(obj))
+    return children
 
-    # Get all the image objects in the screen
-    return get_omero_children_id(screen)
+# def get_plates_by_screen(conn,screen_name):
+#     # Get the screen object
+#     screen = conn.getObject('Screen', attributes={'name': screen_name})
+
+#     # Get all the image objects in the screen
+#     return get_omero_children(screen)
     
-def get_image_ids_by_screen(conn,screen_name):
-    plate_ids = get_plate_ids_by_screen(conn,screen_name)
-    image_ids = []
-    for plate_id in tqdm(plate_ids):
-        plate = conn.getObject('Plate', plate_id)
-        image_ids.extend(get_omero_children_id(plate))
-    return image_ids
+# def get_image_ids_by_screen(conn,screen_name):
+#     screen = conn.getObject('Screen', attributes={'name': screen_name})
+#     plates = get_children_from_list_of_objects([screen])
+#     wells = get_children_from_list_of_objects(plates)
+#     image_ids = get_children_from_list_of_objects(wells)
+#     # for plate in tqdm(plate):
+#     #     # plate = conn.getObject('Plate', plate_id)
+#     #     get_omero_children(plate)
+#     #     image_ids.extend()
+#     return image_ids
 
 
 # screen = conn.getObject('Screen', attributes={'name': screen_name})
