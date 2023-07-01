@@ -1,14 +1,40 @@
 # Import necessary modules
+import omero
 import os
 from tqdm import tqdm
 from idr import connection
-
+import json 
 import idr_funs 
 from idr import connection
 
-screen_name = "idr0093-mueller-perturbation/screenA"
+# screen_names = ["idr0093-mueller-perturbation/screenA"]
+
+# screen_names = get_hcs()
+# print(screen_names)
+# breakpoint()
+
+data_sizes = [1e5,1e6,5e5]
+
+def get_hcs():
+    # breakpoint()
+    conn = connection("idr.openmicroscopy.org")
+    screens = conn.getObjects('Screen')
+    filtered_screens = []
+    for screen in screens:
+        # Get all the map annotation associated with the screen
+        map_anns = [ann for ann in screen.listAnnotations()
+                    if isinstance(ann, omero.gateway.MapAnnotationWrapper)]
+        # Filter based on the map annotation values
+        for ann in map_anns:
+            values = dict(ann.getValue())
+            if values.get('Organism') == 'Homo sapiens' and values.get('Study Type') == 'high content screen':
+                filtered_screens.append(screen.name)
+    conn.close()
+    return filtered_screens
 
 def expand_from_metadata(wildcards):
+    # breakpoint()
+    # checkpoint_output = checkpoints.get_hcs_screens.get(**wildcards).output.screen_names
     checkpoint_output = checkpoints.get_image_metadata.get(**wildcards).output.metadata
     with open(checkpoint_output) as f:
         metadata = json.load(f)
@@ -16,7 +42,7 @@ def expand_from_metadata(wildcards):
     for image_id, zct in tqdm(metadata.items()):
         input_files.extend(
             expand(
-                "results/{image_id}/{z}_{c}_{t}.tiff",
+                "results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
                 image_id=image_id,
                 z=range(zct["z"]),
                 c=range(zct["c"]),
@@ -25,24 +51,77 @@ def expand_from_metadata(wildcards):
         )
     return input_files
 
+def expand_from_screens(wildcards):
+    checkpoint_output  = checkpoints.get_hcs_screens.get(**wildcards).output.screen_names
+    # breakpoint()
+    with open(checkpoint_output) as f:
+        screen_names = list(json.load(f))
+    return expand("results/{screen_name}/image_ids.json",screen_name=screen_names)
+
+def get_organism_screenids(session, organism, idr_base_url="https://idr.openmicroscopy.org"):  
+    screen_id_list = []  
+    qs = {"base": idr_base_url, "key": "organism", "value": organism}  
+    screens_projects_url = "{base}/mapr/api/{key}/?value={value}"  
+    url = screens_projects_url.format(**qs)  
+    sr = session.get(url)  
+    sr.raise_for_status()  
+    for s in sr.json()["screens"]:  
+        screen_id_list.append(str(s["id"]))  
+    return screen_id_list
+
 rule all:
     # conda:
     # "enviroment.yaml"
     input:
         # expand("results/{image_id}.tif", image_id=lambda wildcards: expand_wildcards_from_checkpoint(wildcards)),
         # directory('results/{image_id}/done.flag',image_id=lambda wildcards: expand_wildcards_from_checkpoint(wildcards)),
-        "image_ids.txt",
-        "metadata.json",
-        expand_from_metadata,
+        # expand("{screen_name}/image_ids.txt",screen_name=screen_names),
+        # "results/image_ids.json",
+        # "results/metadata.json",
+        # expand_from_metadata,
+        # expand_from_screens,
+        "results/screen_names.json",
+        # expand("results/{data_size}.json",data_size=data_sizes),
 
+checkpoint get_hcs_screens:
+    # input:
+    #     screen_names=expand_from_screens
+    output:
+        screen_names="results/screen_names.json",
+    run:
+        screen_names = get_hcs()
+        # breakpoint()
+        with open(output.screen_names, "w") as f:
+            json.dump(screen_names, f)
+
+# rule get_image_id_subsets:
+#     input:
+#         screen_json=expand_from_screens,
+#         screen_names="results/screen_names.json"
+#
+#     output:
+#         "results/{data_sizes}.json"
+#     run:
+#         breakpoint()
+#         print(input.screens)
+    
+rule collate_image_ids:
+    input:
+        screen_names="results/screen_names.json",
+        json=expand_from_screens
+        # jsons=expand("{screen_name}/image_ids.json",screen_name=screen_names)
+    output:
+        "results/image_ids.json"
+    shell:
+        "jq -s . {input.jsons} > {output}" 
 
 rule generate_image_ids:
     # conda:
     # "enviroment.yaml"
     output:
-        image_ids=touch("image_ids.txt"),
+        image_ids=touch("results/{screen_name}/image_ids.json"),
     resources:
-        mem_mb=8000,
+        mem_mb=16000,
     # shell:
     #     """
     #     touch {output.image_ids}
@@ -70,7 +149,8 @@ rule generate_image_ids:
 
         # image_ids = query_service.projection(query, params)
         # breakpoint()
-        screen = conn.getObject('Screen', attributes={'name': screen_name})
+        screen = conn.getObject('Screen', attributes={'name': wildcards.screen_name})
+        # screens = conn.getObject('Screen', attributes={'name': wildcards.screen_name})
         print("Getting plates")
         plates = idr_funs.get_omero_children(screen)
         print("Getting wells")
@@ -81,7 +161,9 @@ rule generate_image_ids:
         # print("Getting plates")
         image_ids = [x.image().id for x in well_sampler]
         with open(output.image_ids, "w") as f:
-            f.write("\n".join(str(x) for x in image_ids))
+            json.dump(image_ids, f)
+        # with open(output.image_ids, "w") as f:
+        #     f.write("\n".join(str(x) for x in image_ids))
         print("generate_image_ids: Done")
         conn._closeSession()
 
@@ -100,9 +182,10 @@ checkpoint get_image_metadata:
     resources:
         mem_mb=32000,
     input:
-        image_ids="image_ids.txt",
+        json="results/{screen_name}/image_ids.json",
+        image_ids="results/{screen_name}/image_ids.json",
     output:
-        metadata="metadata.json",
+        metadata="results/{screen_name}/metadata.json",
     run:
 
         conn = connection("idr.openmicroscopy.org")
@@ -127,9 +210,9 @@ rule download_images:
     resources:
         mem_mb=1000,
     input:
-        metadata="metadata.json",
+        metadata="results/{screen_name}/metadata.json",
     output:
-        tiff="results/{image_id}/{z}_{c}_{t}.tiff",
+        tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
     # params:
     # z = lambda wildcards: get_zct(wildcards).get("z"),
     # c = lambda wildcards: get_zct(wildcards).get("c"),
