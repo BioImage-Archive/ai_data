@@ -20,9 +20,11 @@ files_list = expand(
     label=labels,
 )
 
+
 rule all:
     input:
         files_list,
+
 
 rule copy_files:
     input:
@@ -33,9 +35,13 @@ rule copy_files:
     shell:
         "cp {input.image} {output.image}"
 
+
 rule download:
     input:
-        remote=HTTP.remote("https://data.broadinstitute.org/bbbc/BBBC010/BBBC010_v1_foreground_eachworm.zip",keep_local=True),
+        remote=HTTP.remote(
+            "https://data.broadinstitute.org/bbbc/BBBC010/BBBC010_v1_foreground_eachworm.zip",
+            keep_local=True,
+        ),
     output:
         folder=directory("BBBC010_v1_foreground_eachworm"),
     shell:
