@@ -1,20 +1,125 @@
 import json
+import os
 
 # Read the input JSON file
 with open('metadata.json') as f:
     metadata = json.load(f)
 
-# Define the keys for the output JSON files
-keys = list(metadata.keys())
+projects = list(metadata.keys())[7]
 
-# Rule to generate individual JSON files
+# Define a rule for generating JSON files
 rule all:
     input:
-        expand("{key}.json", key=keys)
+        # expand("{key}.json", key=metadata.keys())
+        expand("output/{project}", project=projects)
 
-rule write_json:
+# Function to create the required JSON structure
+# def create_json_content(data):
+#     result = []
+#     for entry in data['data']:
+#         folder = entry['folder']
+#         if not os.path.exists(folder):
+#             print(f"Folder {folder} does not exist. Skipping...")
+#             continue
+
+#         for filename in os.listdir(folder):
+#             file_path = os.path.join(folder, filename)
+#             if os.path.isfile(file_path):
+#                 source_folder = entry['source image']
+#                 source_image_path = os.path.join(source_folder, filename) if os.path.exists(source_folder) else "UNSURE"
+
+#                 result.append({
+#                     "path": file_path,
+#                     "size": os.path.getsize(file_path),
+#                     "attributes": [
+#                         {"name": "date", "value": "TODO"}, # Add logic for date extraction if needed
+#                         {"name": "label type", "value": "TODO"}, # Add logic for label type extraction if needed
+#                         {"name": "source image", "value": source_image_path},
+#                         {"name": "Train-/Testset split", "value": entry['Train-/Testset split']},
+#                     ],
+#                     "type": "file"
+#                 })
+#     return result
+
+# Rule to generate JSON files
+# rule write_json:
+#     output:
+#         json_file="{key}.json"
+#     run:
+#         content = create_json_content(metadata[wildcards.key])
+#         with open(output.json_file, 'w') as f:
+#             json.dump(content, f, indent=4)
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+
+# HTTP = HTTPRemoteProvider()
+rule download_and_extract:
+    input:
+        metadata="metadata.json"
     output:
-        json_file="{key}.json"
-    run:
-        with open(output.json_file, 'w') as f:
-            json.dump(metadata[wildcards.key], f, indent=4)
+        folder=directory("output/{project}"),
+        archive=temp("{project}.zip")
+    params:
+        url=lambda wildcards, input: metadata[wildcards.project]['url']
+    shell:
+        """
+        wget "{params.url}" -O "{output.archive}"
+        mkdir -p "{output.folder}"
+        unzip "{output.archive}" -d "{output.folder}"
+        """
+# rule download_and_extract:
+#     input:
+#         metadata="metadata.json",
+#         remote_folder= HTTP.remote("{url}")
+#         # lambda : metadata[project]["url"]), project=projects)
+#     output:
+#         folder="output/{project}",
+#         tar=temp("{project}.tar.gz"),
+#     # params:
+#         # url=lambda wildcards: metadata[wildcards.project]['url'],
+#     shell:
+#         """
+#         mv {input.remote_folder} {output.folder}
+#         """
+        # # Download the tar file
+        # wget {params.url} -O {wildcards.project}.tar.gz
+
+        # # Extract the tar file to the output directory
+        # mkdir -p {output.folder}
+        # tar -xzvf {wildcards.project}.tar.gz -C {output.folder}
+
+        # """
+        # """
+
+        # # Download the tar file
+        # wget $URL -O {params.url}.tar.gz
+
+        # # Extract the tar file to the output directory
+        # mkdir -p {output.folder}
+        # tar -xzvf {wildcards.project}.tar.gz -C {output.directory}
+        # """
+
+
+
+# checkpoint download_data:
+#     input:
+#         "metadata.json"
+#     output:
+#         directory("output/{project}")
+#     shell:
+#         "mkdir -p {output} && "
+#         "wget wildcards.project"
+#         # "wget -O metadata.json https://raw.githubusercontent.com/roboflow-ai/roboflow-dataset/master/{project}/metadata.json"
+# rule create_per_file_json:
+#     input:
+#         "{project}/{folder}/{filename}"
+# rule get_data:
+#     input:
+#         "metadata.json"
+#     output:
+#         "output/{project}"
+
+# rule collate_jsons:
+#     input:
+#         expand("output/{project}/{folder}/{filename}.json",project=projects)
+#     output:
+#         "output/{project}.json"
