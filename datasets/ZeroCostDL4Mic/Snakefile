@@ -1,0 +1,20 @@
+import json
+
+# Read the input JSON file
+with open('metadata.json') as f:
+    metadata = json.load(f)
+
+# Define the keys for the output JSON files
+keys = list(metadata.keys())
+
+# Rule to generate individual JSON files
+rule all:
+    input:
+        expand("{key}.json", key=keys)
+
+rule write_json:
+    output:
+        json_file="{key}.json"
+    run:
+        with open(output.json_file, 'w') as f:
+            json.dump(metadata[wildcards.key], f, indent=4)
