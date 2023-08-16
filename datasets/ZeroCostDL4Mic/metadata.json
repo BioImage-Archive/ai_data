@@ -148,24 +148,32 @@
         "url": "https://zenodo.org/record/3713330/files/CARE%20%282D%29.zip?download=1",
         "data": [
             {
-                "folder": "CARE (2D)/CARE (2D)/Training - High SNR images",
+                "CARE (2D)/CARE (2D)/Training - High SNR images":
+                {
+                    "Train-/Testset split": "train",
+                    "source image": "CARE (2D)/CARE (2D)/Training - Low SNR images"
+                }
+            },
+            {
+                 "CARE (2D)/CARE (2D)/Test - High SNR images":
+                {
+                    "Train-/Testset split": "test",
+                    "source image": "CARE (2D)/CARE (2D)/Test - Low SNR images"
+                }
+            },
+            {
+                "CARE (2D)/CARE (2D)/Test - Low SNR images":
+                {
+                    "Train-/Testset split": "test",
+                    "source image": ""
+                }
+            },
+            {
+                "CARE (2D)/CARE (2D)/Training - Low SNR images":
+                {
                 "Train-/Testset split": "train",
-                "source image": "CARE (2D)/CARE (2D)/Training - Low SNR images"
-            },
-            {
-                "folder": "CARE (2D)/CARE (2D)/Test - High SNR images",
-                "Train-/Testset split": "test",
-                "source image": "CARE (2D)/CARE (2D)/Test - Low SNR images"
-            },
-            {
-                "folder": "CARE (2D)/CARE (2D)/Test - Low SNR images",
-                "Train-/Testset split": "test",
                 "source image": ""
-            },
-            {
-                "folder": "CARE (2D)/CARE (2D)/Training - Low SNR images",
-                "Train-/Testset split": "train",
-                "source image": ""
+                }
             }
         ]
     },
