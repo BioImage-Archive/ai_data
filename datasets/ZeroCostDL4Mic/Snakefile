@@ -1,6 +1,6 @@
 import json
 import os
-
+import pandas as pd
 import pathlib
 
 # Read the input JSON file
@@ -12,19 +12,29 @@ projects_metadata = list(metadata.keys())
 #     "data/{project}/{folder}/{filename}"
 # )
 
-projects, folders, filenames = glob_wildcards(
-    "data/{project,[^/]+}/{folder}/{filename,[^/]+}"
+projects, folders, filenames,ext = glob_wildcards(
+    "data/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}"
 )
 
 
-print(projects)
+# print(projects)
 
+
+# breakpoint()
 # Define a rule for generating JSON files
 rule all:
     input:
         # expand("{key}.json", key=metadata.keys())
         # expand("data/{project}", project=projects_metdata),
-        expand("output/{project}/{folder}/{filename}.metadata.json",zip,project=projects, folder=folders, filename=filenames),
+        expand(
+            "output/{project}/{folder}/{filename}.{ext}.metadata.json",
+            zip,
+            project=projects,
+            folder=folders,
+            filename=filenames,
+            ext=ext
+        ),
+        expand("output/{project}/metadata.json", project=projects),
 
 
 # rule download_and_extract:
@@ -41,21 +51,61 @@ rule all:
 #         mkdir -p "{output.folder}"
 #         unzip "{output.archive}" -d "{output.folder}"
 #         """
+
+
+def get_jsons(wildcards):
+    folders, filenames,ext = glob_wildcards(
+        f"data/{wildcards.project}/{{folder}}/{{filename,[^/]+}}.{{ext}}"
+    )
+    file_list = expand(
+        f"output/{wildcards.project}/{{folder}}/{{filename}}.{{ext}}.metadata.json",
+        zip,
+        # project=wildcards.project,
+        folder=folders,
+        filename=filenames,
+        ext=ext,
+        allow_missing=True,
+    )
+    return file_list
+
+
 rule collate_json:
     input:
-        json=expand("output/{project,[^/]+}/{folder}/{filename,[^/]+}.metadata.json",filename=filenames,allow_missing=True),
+        json=get_jsons,
+        # json=expand("output/{project,[^/]+}/{folder}/{filename,[^/]+}.metadata.json",filename=filenames,allow_missing=True),
     output:
-        json="output/{project,[^/]+}/metadata.json",
-        csv="output/{project,[^/]+}/metadata.csv",
+        json="output/{project}/metadata.json",
+        csv="output/{project}/metadata.csv",
     run:
+        # Create an empty list to store individual DataFrames
+        dfs = []
+        # Iterate over the input JSON files
+        for json_file in input.json:
+            # breakpoint()
+            # Read JSON into a DataFrame
+            df = pd.read_json(json_file, orient="index").T
+
+            # Set the name of the index as the filepath
+            df["filepath"] = json_file
+            df.set_index('filepath', inplace=True)
+
+            # Append the DataFrame to the list
+            dfs.append(df)
+
+            # Concatenate all the DataFrames
+        breakpoint()
+        final_df = pd.concat(dfs)
+        final_df.to_json(output.json, orient="index", indent=4)
+        final_df.to_csv(output.csv)
+
         breakpoint()
 
 
 rule process_image:
     input:
-        filename="data/{project,[^/]+}/{folder}/{filename,[^/]+}",
+        filename="data/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}",
     output:
-        json="output/{project,[^/]+}/{folder}/{filename,[^/]+}.metadata.json",
+        json="output/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}.metadata.json",
     run:
         # get parent directory of input.filename
         path = pathlib.Path(input.filename)
