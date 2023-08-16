@@ -172,43 +172,43 @@
     "Noise2Void (2D)": {
         "url": "https://zenodo.org/record/3713315/files/Noise2Void%20%282D%29.zip?download=1",
         "data": {
-                "Noise2Void (2D)/Test - Images": {
-                    "Train-/Testset split": "test",
-                    "source image": "Noise2Void (2D)/Test - Images"
-                },
-                "Noise2Void (2D)/Training": {
-                    "Train-/Testset split": "train",
-                    "source image": "Noise2Void (2D)/Training"
-                }
+            "Noise2Void (2D)/Test - Images": {
+                "Train-/Testset split": "test",
+                "source image": "Noise2Void (2D)/Test - Images"
+            },
+            "Noise2Void (2D)/Training": {
+                "Train-/Testset split": "train",
+                "source image": "Noise2Void (2D)/Training"
             }
-        },
-        "Noise2Void (3D)": {
-            "url": "https://zenodo.org/record/3713326",
-            "data": [
-                {
-                    "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Fibronectin dataset",
+        }
+    },
+    "Noise2Void (3D)": {
+        "url": "https://zenodo.org/record/3713326",
+        "data": [
+            {
+                "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Fibronectin dataset": {
                     "Train-/Testset split": "train",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Fibronectin dataset"
-                },
-                {
-                    "Noise2Void (3D)/Noise2Void (3D)/Test images_ Actin dataset":
-                    {"Train-/Testset split": "test",
+                }
+            },
+            {
+                "Noise2Void (3D)/Noise2Void (3D)/Test images_ Actin dataset": {
+                    "Train-/Testset split": "test",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Test images_ Actin dataset"
-                    }
-                },
-                {
-                    "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Actin dataset":
-                    {"Train-/Testset split": "train",
+                }
+            },
+            {
+                "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Actin dataset": {
+                    "Train-/Testset split": "train",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Actin dataset"
-                    }
-                },
-                {
-                    "Noise2Void (3D)/Noise2Void (3D)/Test Images _ Fibronectin dataset":
-                    {
+                }
+            },
+            {
+                "Noise2Void (3D)/Noise2Void (3D)/Test Images _ Fibronectin dataset": {
                     "Train-/Testset split": "test",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Test Images _ Fibronectin dataset"
-                    }
                 }
-            ]
-        }
+            }
+        ]
     }
+}
