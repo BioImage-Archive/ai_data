@@ -1,218 +1,187 @@
 {
     "Stardist_v2": {
         "url": "https://zenodo.org/record/3715492/files/Stardist_v2.zip?download=1",
-        "data": [
-            {
-                "folder": "Stardist/Training - Images",
+        "data": {
+            "Stardist/Training - Images": {
                 "Train-/Testset split": "train",
                 "source image": ""
             },
-            {
-                "folder": "Stardist/Test - Images",
+            "Stardist/Test - Images": {
                 "Train-/Testset split": "test",
                 "source image": ""
             },
-            {
-                "folder": "Stardist/Training - Masks",
+            "Stardist/Training - Masks": {
                 "Train-/Testset split": "train",
                 "source image": "Stardist/Training - Images"
             },
-            {
-                "folder": "Stardist/Test - Masks",
+            "Stardist/Test - Masks": {
                 "Train-/Testset split": "test",
                 "source image": "Stardist/Test - Images"
             },
-            {
-                "folder": "Stardist/Test - Stacks",
+            "Stardist/Test - Stacks": {
                 "Train-/Testset split": "test",
                 "source image": "UNSURE"
             }
-        ]
+        }
     },
     "DeepSTORM dataset_v1": {
         "url": "https://zenodo.org/record/3959089/files/DeepSTORM%20dataset_v1.zip?download=1",
-        "data": [
-            {
-                "folder": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN4 - Training dataset",
+        "data": {
+            "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN4 - Training dataset": {
                 "Train-/Testset split": "train",
                 "source image": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN4 - Training dataset"
             },
-            {
-                "folder": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN10 - Training dataset",
+            "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN10 - Training dataset": {
                 "Train-/Testset split": "train",
                 "source image": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN10 - Training dataset"
             }
-        ]
+        }
     },
     "CycleGAN SDCM to SRRF_v1": {
         "url": "https://zenodo.org/record/3941884/files/CycleGAN%20SDCM%20to%20SRRF_v1.zip?download=1",
-        "data": [
-            {
-                "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - test",
+        "data": {
+            "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - test": {
                 "Train-/Testset split": "test",
                 "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - test"
             },
-            {
-                "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - training",
+            "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - training": {
                 "Train-/Testset split": "train",
                 "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - training"
             },
-            {
-                "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - test",
+            "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - test": {
                 "Train-/Testset split": "test",
                 "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - test"
             },
-            {
-                "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - training",
+            "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - training": {
                 "Train-/Testset split": "train",
                 "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - training"
             }
-        ]
+        }
     },
     "YoloV2 dataset_v1": {
         "url": "https://zenodo.org/record/3941908/files/YoloV2%20dataset_v1.zip?download=1",
-        "folders": [
-            {
-                "folder": "YoloV2 dataset_v1/Training_Images",
+        "data": {
+            "YoloV2 dataset_v1/Training_Images": {
                 "Train-/Testset split": "train",
                 "source image": ""
             },
-            {
-                "folder": "YoloV2 dataset_v1/Test_Images",
+            "YoloV2 dataset_v1/Test_Images": {
                 "Train-/Testset split": "test",
                 "source image": ""
             },
-            {
-                "folder": "YoloV2 dataset_v1/Training_Annotations",
+            "YoloV2 dataset_v1/Training_Annotations": {
                 "Train-/Testset split": "train",
                 "source image": "YoloV2 dataset_v1/Training_Images"
             },
-            {
-                "folder": "YoloV2 dataset_v1/Test_Annotations",
+            "YoloV2 dataset_v1/Test_Annotations": {
                 "Train-/Testset split": "test",
                 "source image": "YoloV2 dataset_v1/Test_Images"
             }
-        ]
+        }
     },
     "pix2pix Actin to Dapi dataset_v1": {
         "url": "https://zenodo.org/record/3941889/files/pix2pix%20Actin%20to%20Dapi%20dataset_v1.zip?download=1",
-        "data": [
-            {
-                "folder": "pix2pix Actin to Dapi dataset_v1/Actin - training",
+        "data": {
+            "pix2pix Actin to Dapi dataset_v1/Actin - training": {
                 "Train-/Testset split": "train",
                 "source image": "pix2pix Actin to Dapi dataset_v1/Dapi - training"
             },
-            {
-                "folder": "pix2pix Actin to Dapi dataset_v1/Actin - test",
+            "pix2pix Actin to Dapi dataset_v1/Actin - test": {
                 "Train-/Testset split": "test",
                 "source image": "pix2pix Actin to Dapi dataset_v1/Dapi - test"
             },
-            {
-                "folder": "pix2pix Actin to Dapi dataset_v1/Dapi - training",
+            "pix2pix Actin to Dapi dataset_v1/Dapi - training": {
                 "Train-/Testset split": "train",
                 "source image": "pix2pix Actin to Dapi dataset_v1/Actin - training"
             },
-            {
-                "folder": "pix2pix Actin to Dapi dataset_v1/Dapi - test",
+            "pix2pix Actin to Dapi dataset_v1/Dapi - test": {
                 "Train-/Testset split": "test",
                 "source image": "pix2pix Actin to Dapi dataset_v1/Actin - test"
             }
-        ]
+        }
     },
     "Label-free prediction (fnet) v2": {
         "url": "https://zenodo.org/record/3748967/files/Label-free%20prediction%20%28fnet%29%20v2.zip?download=1",
-        "data": [
-            {
-                "folder": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Test dataset/Test - TOM20 fluorescence stacks_Split_data",
+        "data": {
+            "Label-free prediction (fnet) v2/Test dataset/Test - TOM20 fluorescence stacks_Split_data": {
                 "Train-/Testset split": "test",
-                "source image": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Test dataset/Test - TOM20 fluorescence stacks_Split_data"
+                "source image": "Label-free prediction (fnet) v2/Test dataset/Test - TOM20 fluorescence stacks_Split_data"
             },
-            {
-                "folder": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Test dataset/Test - Transmitted light stacks_Split_data",
+            "Label-free prediction (fnet) v2/Test dataset/Test - Transmitted light stacks_Split_data": {
                 "Train-/Testset split": "test",
                 "source image": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Test dataset/Test - Transmitted light stacks_Split_data"
             },
-            {
-                "folder": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - TOM20 fluorescence stacks_Split_data",
+            "Label-free prediction (fnet) v2/Training dataset/Training - TOM20 fluorescence stacks_Split_data": {
                 "Train-/Testset split": "train",
-                "source image": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - TOM20 fluorescence stacks_Split_data"
+                "source image": "Label-free prediction (fnet) v2/Training dataset/Training - TOM20 fluorescence stacks_Split_data"
             },
-            {
-                "folder": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - Transmitted light stacks_Split_data",
+            "Label-free prediction (fnet) v2/Training dataset/Training - Transmitted light stacks_Split_data": {
                 "Train-/Testset split": "train",
-                "source image": "Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - Transmitted light stacks_Split_data"
+                "source image": "Label-free prediction (fnet) v2/Training dataset/Training - Transmitted light stacks_Split_data"
             }
-        ]
-    },
-    "CARE (2D)": {
-        "url": "https://zenodo.org/record/3713330/files/CARE%20%282D%29.zip?download=1",
-        "data": [
-            {
-                "CARE (2D)/CARE (2D)/Training - High SNR images": {
-                    "Train-/Testset split": "train",
-                    "source image": "CARE (2D)/CARE (2D)/Training - Low SNR images"
+        },
+        "CARE (2D)": {
+            "url": "https://zenodo.org/record/3713330/files/CARE%20%282D%29.zip?download=1",
+            "data": [
+                {
+                    "CARE (2D)/Training - High SNR images": {
+                        "Train-/Testset split": "train",
+                        "source image": "CARE (2D)/Training - Low SNR images"
+                    }
+                },
+                {
+                    "CARE (2D)/Test - High SNR images": {
+                        "Train-/Testset split": "test",
+                        "source image": "CARE (2D)/Test - Low SNR images"
+                    }
+                },
+                {
+                    "CARE (2D)/Test - Low SNR images": {
+                        "Train-/Testset split": "test",
+                        "source image": ""
+                    }
+                },
+                {
+                    "CARE (2D)/Training - Low SNR images": {
+                        "Train-/Testset split": "train",
+                        "source image": ""
+                    }
                 }
-            },
-            {
-                "CARE (2D)/CARE (2D)/Test - High SNR images": {
+            ]
+        },
+        "Noise2Void (2D)": {
+            "url": "https://zenodo.org/record/3713315/files/Noise2Void%20%282D%29.zip?download=1",
+            "data": {
+                "Noise2Void (2D)/Test - Images": {
                     "Train-/Testset split": "test",
-                    "source image": "CARE (2D)/CARE (2D)/Test - Low SNR images"
-                }
-            },
-            {
-                "CARE (2D)/CARE (2D)/Test - Low SNR images": {
-                    "Train-/Testset split": "test",
-                    "source image": ""
-                }
-            },
-            {
-                "CARE (2D)/CARE (2D)/Training - Low SNR images": {
+                    "source image": "Noise2Void (2D)/Test - Images"
+                },
+                "Noise2Void (2D)/Training": {
                     "Train-/Testset split": "train",
-                    "source image": ""
+                    "source image": "Noise2Void (2D)/Training"
                 }
             }
-        ]
-    },
-    "Noise2Void (2D)": {
-        "url": "https://zenodo.org/record/3713315/files/Noise2Void%20%282D%29.zip?download=1",
-        "data": {
-            "Noise2Void (2D)/Test - Images": {
-                "Train-/Testset split": "test",
-                "source image": "Noise2Void (2D)/Test - Images"
-            },
-            "Noise2Void (2D)/Training": {
-                "Train-/Testset split": "train",
-                "source image": "Noise2Void (2D)/Training"
-            }
-        }
-    },
-    "Noise2Void (3D)": {
-        "url": "https://zenodo.org/record/3713326",
-        "data": [
-            {
-                "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Fibronectin dataset": {
+        },
+        "Noise2Void (3D)": {
+            "url": "https://zenodo.org/record/3713326",
+            "data": {
+                "Noise2Void (3D)/Training Image _ Fibronectin dataset": {
                     "Train-/Testset split": "train",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Fibronectin dataset"
-                }
-            },
-            {
-                "Noise2Void (3D)/Noise2Void (3D)/Test images_ Actin dataset": {
+                },
+                "Noise2Void (3D)/Test images_ Actin dataset": {
                     "Train-/Testset split": "test",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Test images_ Actin dataset"
-                }
-            },
-            {
-                "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Actin dataset": {
+                },
+                "Noise2Void (3D)/Training Image _ Actin dataset": {
                     "Train-/Testset split": "train",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Actin dataset"
-                }
-            },
-            {
-                "Noise2Void (3D)/Noise2Void (3D)/Test Images _ Fibronectin dataset": {
+                },
+                "Noise2Void (3D)/Test Images _ Fibronectin dataset": {
                     "Train-/Testset split": "test",
                     "source image": "Noise2Void (3D)/Noise2Void (3D)/Test Images _ Fibronectin dataset"
                 }
             }
-        ]
+        }
     }
 }
