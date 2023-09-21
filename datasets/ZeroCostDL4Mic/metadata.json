@@ -2,23 +2,23 @@
     "Stardist_v2": {
         "url": "https://zenodo.org/record/3715492/files/Stardist_v2.zip?download=1",
         "data": {
-            "Stardist/Training - Images": {
+            "Stardist/Stardist_v2/Training - Images": {
                 "Train-/Testset split": "train",
                 "source image": ""
             },
-            "Stardist/Test - Images": {
+            "Stardist/Stardist_v2/Test - Images": {
                 "Train-/Testset split": "test",
                 "source image": ""
             },
-            "Stardist/Training - Masks": {
+            "Stardist/Stardist_v2/Training - Masks": {
                 "Train-/Testset split": "train",
                 "source image": "Stardist/Training - Images"
             },
-            "Stardist/Test - Masks": {
+            "Stardist/Stardist_v2/Test - Masks": {
                 "Train-/Testset split": "test",
                 "source image": "Stardist/Test - Images"
             },
-            "Stardist/Test - Stacks": {
+            "Stardist/Stardist_v2/Test - Stacks": {
                 "Train-/Testset split": "test",
                 "source image": "UNSURE"
             }
