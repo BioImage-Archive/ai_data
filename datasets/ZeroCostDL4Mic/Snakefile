@@ -87,16 +87,30 @@ rule copy_image:
     ln "{input.image}" "{output.image}"
     """
 
+rule process_image:
     input:
-        filename = "data/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}",
+        # filename = "data/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}",
+        filename = "{meta_project,[^/]+}/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}"
     output:
-        json="{meta_project,[^/]+}/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}.metadata.json",
+        json="{meta_project,[^/]+}/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}.metadata.json",
     run:
-        # get parent directory of input.filename
+        # breakpoint()
         path = pathlib.Path(input.filename)
         parent_dir = path.parent
-        # metadata_dict = metadata[wildcards.project][wildcard.folder]
-        metadata_dict = metadata[wildcards.project]["data"][wildcards.folder]
-        # create the metadata file
+        full_path = f"{wildcards.meta_project}/{wildcards.project}/{wildcards.folder}/{wildcards.filename}.{wildcards.ext}"
+
+        # Check if the metadata key exists
+        metadata_key = metadata[wildcards.project].get("data", {}).get(wildcards.project+"/"+wildcards.folder, {})
+
+        if not metadata_key:
+            print(f"skip {wildcards.project}/{wildcards.folder}")
+        else:
+            # Check if 'source image' exists in metadata_key
+            if 'source image' in metadata_key:
+                source_image = f"{wildcards.project}/{metadata_key['source image']}/{wildcards.filename}.{wildcards.ext}"
+                metadata_key["source image"] = source_image 
+
+        metadata_dict = metadata_key
+
         with open(output.json, "w") as f:
             json.dump(metadata_dict, f, indent=4)
