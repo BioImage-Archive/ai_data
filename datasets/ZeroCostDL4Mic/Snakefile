@@ -34,10 +34,10 @@ def get_jsons(wildcards):
     # breakpoint()
     checkpoint_output = checkpoints.download_and_extract.get(**wildcards).output
     folders, filenames, ext = glob_wildcards(
-        f"data/{wildcards.project}/{{folder}}/{{filename,[^/]+}}.{{ext}}"
+        f"data/{wildcards.project}/{{folder}}/{{filename,[^/.]+}}.{{ext,[^/.]+}}"
     )
     file_list = expand(
-        f"{{meta_project}}/{wildcards.project}/{{folder}}/{{filename}}.{{ext}}.metadata.json",
+        f"{wildcards.meta_project}/{wildcards.project}/{{folder}}/{{filename}}.{{ext}}.metadata.json",
         zip,
         # project=wildcards.project,
         folder=folders,
