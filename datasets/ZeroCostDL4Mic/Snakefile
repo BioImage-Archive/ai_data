@@ -76,9 +76,17 @@ checkpoint collate_json:
         final_df.to_json(output.json, orient="index", indent=4)
         final_df.to_csv(output.csv)
 
-        # breakpoint()
 
-checkpoint process_image:
+rule copy_image:
+  input:
+    image="data/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}",
+  output:
+    image="{meta_project,[^/]+}/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}"
+  shell:
+    """
+    ln "{input.image}" "{output.image}"
+    """
+
     input:
         filename = "data/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}",
     output:
