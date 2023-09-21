@@ -9,6 +9,7 @@ with open("metadata.json") as f:
 
 projects_metadata = list(metadata.keys())
 meta_project_name = "ZeroCostDL4Mic"
+print(projects_metadata)
 rule all:
     input:
         expand("{meta_project}/{project}/metadata.json",meta_project=meta_project_name,
