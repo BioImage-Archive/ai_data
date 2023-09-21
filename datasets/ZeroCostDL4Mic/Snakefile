@@ -14,6 +14,7 @@ rule all:
     input:
         expand("{meta_project}/{project}/metadata.json",meta_project=meta_project_name,
         project=projects_metadata),
+        
  
 checkpoint download_and_extract:
     input:
@@ -32,35 +33,70 @@ checkpoint download_and_extract:
 
 def get_jsons(wildcards):
     # breakpoint()
+    print(wildcards.project)
     checkpoint_output = checkpoints.download_and_extract.get(**wildcards).output
-    folders, filenames, ext = glob_wildcards(
-        f"data/{wildcards.project}/{{folder}}/{{filename,[^/.]+}}.{{ext,[^/.]+}}"
-    )
+    # breakpoint()
+    glob_string = f"data/{wildcards.project}/{{folder,.*}}/{{filename,[^/.][^/]*}}.{{ext,[^.]+}}" 
+    folders, filenames, ext = glob_wildcards(glob_string)
+    print(set(folders))
+    print(set(filenames))
+    print(set(ext))
+    # breakpoint()
     file_list = expand(
         f"{wildcards.meta_project}/{wildcards.project}/{{folder}}/{{filename}}.{{ext}}.metadata.json",
         zip,
-        # project=wildcards.project,
+        project=wildcards.project,
         folder=folders,
         filename=filenames,
         ext=ext,
         allow_missing=True,
     )
+
+    # breakpoint()
+
+
     return file_list
+
+
+rule save_file_list:
+    output:
+        json="{meta_project}/{project}/file_list.json",
+    run:
+        file_list = get_jsons(wildcards)
+        if file_list == []:
+            raise Exception("No files found")
+        # breakpoint()
+        with open(output.json, "w") as f:
+            json.dump(file_list, f, indent=4)
+        # shell(f"echo '{file_list}' > {output.json_file}")
+
+def get_metadata(wildcards):
+  file_list_json = f"{wildcards.meta_project}/{wildcards.project}/file_list.json"
+  with open(file_list_json) as f:
+    file_list = json.load(f)
+  return file_list
 
 
 checkpoint collate_json:
     input:
         json=get_jsons,
+        # json=get_metadata
     output:
-        json="{meta_project,[^/]+}/{project,[^/]+}/metadata.json",
-        csv="{meta_project,[^/]+}/{project,[^/]+}/metadata.csv",
+        json="{meta_project}/{project}/metadata.json",
+        csv="{meta_project}/{project}/metadata.csv",
     run:
+        # with open(input.json, 'r') as f:
+        #   file_list = json.load(f)
         # Create an empty list to store individual DataFrames
         dfs = []
         # Iterate over the input JSON files
         for json_file in input.json:
             # breakpoint()
             # Read JSON into a DataFrame
+            # breakpoint()
+            file_path = pathlib.Path(json_file)
+            # breakpoint()
+
             df = pd.read_json(json_file, orient="index").T
 
             # Set the name of the index as the filepath
@@ -76,28 +112,45 @@ checkpoint collate_json:
         final_df.to_json(output.json, orient="index", indent=4)
         final_df.to_csv(output.csv)
 
+        # breakpoint()]
+
 
 rule copy_image:
   input:
-    image="data/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}",
+    image="data/{project}/{folder}/{filename}.{ext}",
+    # bkup="{meta_project}/{project}/{folder}/{filename}.{ext}.metadata.json",
+  wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
   output:
-    image="{meta_project,[^/]+}/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}"
+    image="{meta_project}/{project}/{folder}/{filename}.{ext}",
   shell:
     """
     ln "{input.image}" "{output.image}"
     """
 
+# f"data/{wildcards.project}/{{folder,.*}}/{{filename,[^/.][^/]*}}.{{ext,[^.]+}}"
+
 rule process_image:
+    wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
     input:
-        # filename = "data/{project,[^/]+}/{folder}/{filename,[^/]+}.{ext}",
-        filename = "{meta_project,[^/]+}/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}"
+        cp="{meta_project}/{project}/{folder}/{filename}.{ext}",
+        filename = "data/{project}/{folder}/{filename}.{ext}",
+        # filename = "{meta_project}/{project}/{folder}/{filename}.{ext}"
     output:
-        json="{meta_project,[^/]+}/{project,[^/]+}/{folder}/{filename,[^/.]+}.{ext,[^.]+}.metadata.json",
+        json="{meta_project}/{project}/{folder}/{filename}.{ext}.metadata.json"
     run:
-        # breakpoint()
-        path = pathlib.Path(input.filename)
-        parent_dir = path.parent
-        full_path = f"{wildcards.meta_project}/{wildcards.project}/{wildcards.folder}/{wildcards.filename}.{wildcards.ext}"
+        # path = pathlib.Path(input.json)
+        # parent_dir = path.parent
+        # full_path = f"{wildcards.meta_project}/{wildcards.project}/{wildcards.folder}/{wildcards.filename}.{wildcards.ext}"
 
         # Check if the metadata key exists
         metadata_key = metadata[wildcards.project].get("data", {}).get(wildcards.project+"/"+wildcards.folder, {})
@@ -108,7 +161,7 @@ rule process_image:
             # Check if 'source image' exists in metadata_key
             if 'source image' in metadata_key:
                 source_image = f"{wildcards.project}/{metadata_key['source image']}/{wildcards.filename}.{wildcards.ext}"
-                metadata_key["source image"] = source_image 
+                metadata_key["source image"] = source_image
 
         metadata_dict = metadata_key
 
