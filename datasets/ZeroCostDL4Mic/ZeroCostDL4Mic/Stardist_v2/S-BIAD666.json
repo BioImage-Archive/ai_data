@@ -11,7 +11,7 @@
     },
     {
       "name": "ReleaseDate",
-      "value": "2020-03-17"
+      "value": "2023-05-10"
     },
     {
       "name": "RootPath",
@@ -81,11 +81,11 @@
         "attributes": [
           {
             "name": "Name",
-            "value": "Guillaume Jacquemet"
+            "value": "Craig Russell"
           },
           {
             "name": "affiliation",
-            "value": "1) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, 20520 Turku, Finland 2) Turku Bioscience Centre, University of Turku and Åbo Akademi University, FI-20520 Turku, Finland",
+            "value": "European Molecular Biology Laboratory, European Bioinformatics Institute",
             "reference": true
           },
           {
@@ -100,11 +100,25 @@
         "attributes": [
           {
             "name": "Name",
+            "value": "Faculty of Science and Engineering, Cell Biology, Åbo Akademi University"
+          },
+          {
+            "name": "Address",
+            "value": "20520 Turku, Finland"
+          }
+        ]
+      },
+      {
+        "accno": "o2",
+        "type": "organization",
+        "attributes": [
+          {
+            "name": "Name",
             "value": "European Molecular Biology Laboratory, European Bioinformatics Institute"
           },
           {
-            "name": "Address"
-            // "value": "UNSURE"
+            "name": "Address",
+            "value": "UNSURE"
           }
         ]
       },
@@ -121,7 +135,7 @@
           },
           {
             "name": "Authors",
-            "value": "Johanna Jukkala and Guillaume Jacquemet"
+            "value": "UNSURE"
           },
           {
             "name": "DOI",
@@ -139,11 +153,11 @@
         "attributes": [
           {
             "name": "Title",
-            "value": "UNSURE"
+            "value": "Paired microscopy images (fluorescence) and corresponding masks"
           },
           {
             "name": "Biological entity",
-            "value": "UNSURE"
+            "value": "Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation"
           },
           {
             "name": "Description",
@@ -195,11 +209,11 @@
           },
           {
             "name": "Imaging Instrument",
-            "value": "Spinning disk confocal microscope with a 20x 0.8 NA objective"
+            "value": "UNSURE"
           },
           {
             "name": "Image Acquisition Parameters",
-            "value": "Image size: 1024x1024 (Pixel size: 634 nm)"
+            "value": "UNSURE"
           }
         ],
         "subsections": [
@@ -209,15 +223,15 @@
             "attributes": [
               {
                 "name": "Ontology Value",
-                "value": "UNSURE"
+                "value": "Echography"
               },
               {
                 "name": "Ontology Name",
-                "value": "UNSURE"
+                "value": "EDAM"
               },
               {
                 "name": "Ontology Term ID",
-                "value": "UNSURE"
+                "value": "http://edamontology.org/topic_3954"
               }
             ]
           }
@@ -229,7 +243,7 @@
         "attributes": [
           {
             "name": "Name",
-            "value": "UNSURE"
+            "value": "Paired microscopy images (fluorescence) and corresponding masks"
           },
           {
             "name": "Description",
@@ -246,7 +260,7 @@
             "attributes": [
               {
                 "name": "Biosample",
-                "value": "UNSURE"
+                "value": "Paired microscopy images (fluorescence) and corresponding masks"
               },
               {
                 "name": "Specimen",
@@ -266,7 +280,7 @@
         "attributes": [
           {
             "name": "Title",
-            "value": "UNSURE"
+            "value": "Segmentation masks"
           },
           {
             "name": "Annotation overview",
@@ -274,7 +288,7 @@
           },
           {
             "name": "File List",
-            "value": "UNSURE"
+            "value": "file_list_segmentation_masks.json"
           }
         ]
       }
