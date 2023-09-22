@@ -91,16 +91,11 @@ checkpoint collate_json:
         dfs = []
         # Iterate over the input JSON files
         for json_file in input.json:
-            # breakpoint()
             # Read JSON into a DataFrame
-            # breakpoint()
-            file_path = pathlib.Path(json_file)
-            # breakpoint()
-
             df = pd.read_json(json_file, orient="index").T
-
             # Set the name of the index as the filepath
-            df["filepath"] = json_file
+            # I think this needs to be smarter
+            df["filepath"] = json_file.replace('.metadata.json', '')
             df.set_index("filepath", inplace=True)
 
             # Append the DataFrame to the list
