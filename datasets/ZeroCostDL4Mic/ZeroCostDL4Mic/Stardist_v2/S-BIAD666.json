@@ -1,5 +1,4 @@
 {
-  "accno": "S-BIAD666",
   "attributes": [
     {
       "name": "REMBI_PageTab Conversion Script Version",
@@ -11,7 +10,7 @@
     },
     {
       "name": "ReleaseDate",
-      "value": "2023-05-10"
+      "value": "2023-09-30"
     },
     {
       "name": "RootPath",
@@ -118,7 +117,7 @@
           },
           {
             "name": "Address",
-            "value": "UNSURE"
+            "value": ""
           }
         ]
       },
@@ -127,7 +126,7 @@
         "attributes": [
           {
             "name": "Title",
-            "value": "UNSURE"
+            "value": ""
           },
           {
             "name": "Year",
@@ -135,7 +134,7 @@
           },
           {
             "name": "Authors",
-            "value": "UNSURE"
+            "value": ""
           },
           {
             "name": "DOI",
@@ -143,7 +142,7 @@
           },
           {
             "name": "PMC ID",
-            "value": "UNSURE"
+            "value": ""
           }
         ]
       },
@@ -161,7 +160,7 @@
           },
           {
             "name": "Description",
-            "value": "UNSURE"
+            "value": ""
           }
         ],
         "subsections": [
@@ -171,15 +170,15 @@
             "attributes": [
               {
                 "name": "Scientific name",
-                "value": "UNSURE"
+                "value": ""
               },
               {
                 "name": "Common name",
-                "value": "UNSURE"
+                "value": ""
               },
               {
                 "name": "NCBI taxon ID",
-                "value": "UNSURE"
+                "value": ""
               }
             ]
           }
@@ -191,11 +190,11 @@
         "attributes": [
           {
             "name": "Title",
-            "value": "UNSURE"
+            "value": ""
           },
           {
             "name": "Sample Preparation Protocol",
-            "value": "UNSURE"
+            "value": ""
           }
         ]
       },
@@ -205,15 +204,15 @@
         "attributes": [
           {
             "name": "Title",
-            "value": "UNSURE"
+            "value": ""
           },
           {
             "name": "Imaging Instrument",
-            "value": "UNSURE"
+            "value": ""
           },
           {
             "name": "Image Acquisition Parameters",
-            "value": "UNSURE"
+            "value": ""
           }
         ],
         "subsections": [
@@ -247,11 +246,7 @@
           },
           {
             "name": "Description",
-            "value": "UNSURE"
-          },
-          {
-            "name": "File List",
-            "value": "file_list.json"
+            "value": ""
           }
         ],
         "subsections": [
@@ -264,11 +259,15 @@
               },
               {
                 "name": "Specimen",
-                "value": "UNSURE"
+                "value": ""
               },
               {
                 "name": "Image acquisition",
-                "value": "UNSURE"
+                "value": ""
+              },
+              {
+                "name": "File List",
+                "value": ""
               }
             ]
           }
@@ -284,11 +283,11 @@
           },
           {
             "name": "Annotation overview",
-            "value": "UNSURE"
+            "value": ""
           },
           {
             "name": "File List",
-            "value": "file_list_segmentation_masks.json"
+            "value": "Stardist_v2/file_list_annotations.json"
           }
         ]
       }
