@@ -10,10 +10,13 @@ with open("metadata.json") as f:
 projects_metadata = list(metadata.keys())
 meta_project_name = "ZeroCostDL4Mic"
 print(projects_metadata)
+metadata_files = ["metadata.json", "metadata.tsv","file_list_annotations.json"]
 rule all:
     input:
-        expand("{meta_project}/{project}/metadata.json",meta_project=meta_project_name,
-        project=projects_metadata),
+        expand("{meta_project}/{project}/{metadata_files}",meta_project=meta_project_name,
+        project=projects_metadata,
+        metadata_files=metadata_files,
+        ),
         
  
 checkpoint download_and_extract:
@@ -60,7 +63,7 @@ def get_jsons(wildcards):
 
 rule save_file_list:
     output:
-        json="{meta_project}/{project}/file_list.json",
+        json="{meta_project}/{project}/metadata_list.json",
     run:
         file_list = get_jsons(wildcards)
         if file_list == []:
@@ -76,14 +79,34 @@ def get_metadata(wildcards):
     file_list = json.load(f)
   return file_list
 
+def transform_row_to_dict(row):
+    # Create a dictionary with the desired structure
+    transformed_dict = {
+        "path": row.name,  # Assuming the index of the DataFrame is the path
+        "attributes": [],
+        "type": "file"
+    }
+    
+    # Add the column names and their corresponding values to the "attributes" list
+    for column_name, column_value in row.items():
+        attribute = {
+            "name": column_name,
+            "value": column_value
+        }
+        transformed_dict["attributes"].append(attribute)
+    
+    return transformed_dict
 
 checkpoint collate_json:
     input:
         json=get_jsons,
         # json=get_metadata
     output:
-        json="{meta_project}/{project}/metadata.json",
-        csv="{meta_project}/{project}/metadata.csv",
+        # json="{meta_project}/{project}/metadata.json",
+        metadata_tsv="{meta_project}/{project}/metadata.tsv",
+        metadata_json="{meta_project}/{project}/metadata.json",
+        file_list="{meta_project}/{project}/file_list.tsv",
+        file_list_annotations="{meta_project}/{project}/file_list_annotations.json",
     run:
         # with open(input.json, 'r') as f:
         #   file_list = json.load(f)
@@ -95,19 +118,25 @@ checkpoint collate_json:
             df = pd.read_json(json_file, orient="index").T
             # Set the name of the index as the filepath
             # I think this needs to be smarter
-            df["filepath"] = json_file.replace('.metadata.json', '')
-            df.set_index("filepath", inplace=True)
+            df["Files"] = json_file.replace('.metadata.json', '')
+            df['Files'] = df['Files'].str.replace('ZeroCostDL4Mic/', '')
+            df.set_index("Files", inplace=True)
 
             # Append the DataFrame to the list
+            # breakpoint()
             dfs.append(df)
 
             # Concatenate all the DataFrames
-        # breakpoint()
         final_df = pd.concat(dfs)
-        final_df.to_json(output.json, orient="index", indent=4)
-        final_df.to_csv(output.csv)
-
-        # breakpoint()]
+        final_df.to_json(output.metadata_json, orient="index", indent=4)
+        final_df.to_csv(output.metadata_tsv, sep='\t')
+        transformed_data = final_df.apply(transform_row_to_dict, axis=1).tolist()
+        # no_source_image = final_df.loc[final_df['source image'].isnull()]
+        # breakpoint()
+        # Save the list to a JSON file
+        with open(output.file_list_annotations, 'w') as f:
+            json.dump(transformed_data, f, indent=4)
+        # breakpoint()
 
 
 rule copy_image:
