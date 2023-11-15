@@ -1,0 +1,297 @@
+{
+  "attributes": [
+    {
+      "name": "REMBI_PageTab Conversion Script Version",
+      "value": "1.0.0"
+    },
+    {
+      "name": "Title",
+      "value": "ZeroCostDL4Mic - Stardist example training and test dataset"
+    },
+    {
+      "name": "ReleaseDate",
+      "value": "2023-10-30"
+    },
+    {
+      "name": "RootPath",
+      "value": ""
+    },
+    {
+      "name": "AttachTo",
+      "value": "BioImages"
+    }
+  ],
+  "section": {
+    "type": "Study",
+    "attributes": [
+      {
+        "name": "Description",
+        "value": "A dataset consisting of paired microscopy images (fluorescence) and corresponding masks. Microscopy data type: Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation."
+      },
+      {
+        "name": "Keyword",
+        "value": "Deep learning"
+      },
+      {
+        "name": "Keyword",
+        "value": "Image segmentation"
+      },
+      {
+        "name": "Keyword",
+        "value": "Stardist"
+      },
+      {
+        "name": "Keyword",
+        "value": "Microscopy"
+      }
+    ],
+    "links": [
+      {
+        "url": "https://doi.org/10.5281/zenodo.3715492",
+        "attributes": [
+          {
+            "name": "Description",
+            "value": "Original submission (not curated)"
+          }
+        ]
+      }
+    ],
+    "subsections": [
+      {
+        "type": "author",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Johanna Jukkala"
+          },
+          {
+            "name": "affiliation",
+            "value": "1) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, 20520 Turku, Finland 2) Turku Bioscience Centre, University of Turku and Åbo Akademi University, FI-20520 Turku, Finland",
+            "reference": true
+          },
+          {
+            "name": "Role",
+            "value": "submitter"
+          }
+        ]
+      },
+      {
+        "type": "author",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Craig Russell"
+          },
+          {
+            "name": "affiliation",
+            "value": "European Molecular Biology Laboratory, European Bioinformatics Institute",
+            "reference": true
+          },
+          {
+            "name": "Role",
+            "value": "data curator"
+          }
+        ]
+      },
+      {
+        "accno": "o1",
+        "type": "organization",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Faculty of Science and Engineering, Cell Biology, Åbo Akademi University"
+          },
+          {
+            "name": "Address",
+            "value": "20520 Turku, Finland"
+          }
+        ]
+      },
+      {
+        "accno": "o2",
+        "type": "organization",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "European Molecular Biology Laboratory, European Bioinformatics Institute"
+          },
+          {
+            "name": "Address",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "type": "Publication",
+        "attributes": [
+          {
+            "name": "Title",
+            "value": ""
+          },
+          {
+            "name": "Year",
+            "value": "2020"
+          },
+          {
+            "name": "Authors",
+            "value": ""
+          },
+          {
+            "name": "DOI",
+            "value": "https://doi.org/10.5281/zenodo.3715492"
+          },
+          {
+            "name": "PMC ID",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "accno": "Biosample-1",
+        "type": "Biosample",
+        "attributes": [
+          {
+            "name": "Title",
+            "value": "Paired microscopy images (fluorescence) and corresponding masks"
+          },
+          {
+            "name": "Biological entity",
+            "value": "Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation"
+          },
+          {
+            "name": "Description",
+            "value": ""
+          }
+        ],
+        "subsections": [
+          {
+            "accno": "Organism-1",
+            "type": "Organism",
+            "attributes": [
+              {
+                "name": "Scientific name",
+                "value": ""
+              },
+              {
+                "name": "Common name",
+                "value": ""
+              },
+              {
+                "name": "NCBI taxon ID",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accno": "Specimen-1",
+        "type": "Specimen",
+        "attributes": [
+          {
+            "name": "Title",
+            "value": ""
+          },
+          {
+            "name": "Sample Preparation Protocol",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "accno": "Image Acquisition-1",
+        "type": "Image Acquisition",
+        "attributes": [
+          {
+            "name": "Title",
+            "value": ""
+          },
+          {
+            "name": "Imaging Instrument",
+            "value": ""
+          },
+          {
+            "name": "Image Acquisition Parameters",
+            "value": ""
+          }
+        ],
+        "subsections": [
+          {
+            "accno": "Imaging Method-1",
+            "type": "Imaging Method",
+            "attributes": [
+              {
+                "name": "Ontology Value",
+                "value": "Echography"
+              },
+              {
+                "name": "Ontology Name",
+                "value": "EDAM"
+              },
+              {
+                "name": "Ontology Term ID",
+                "value": "http://edamontology.org/topic_3954"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accno": "Study Component-1",
+        "type": "Study Component",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Paired microscopy images (fluorescence) and corresponding masks"
+          },
+          {
+            "name": "Description",
+            "value": ""
+          }
+        ],
+        "subsections": [
+          {
+            "type": "Associations",
+            "attributes": [
+              {
+                "name": "Biosample",
+                "value": "Paired microscopy images (fluorescence) and corresponding masks"
+              },
+              {
+                "name": "Specimen",
+                "value": ""
+              },
+              {
+                "name": "Image acquisition",
+                "value": ""
+              },
+              {
+                "name": "File List",
+                "value": ""
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accno": "Annotations-1",
+        "type": "Annotations",
+        "attributes": [
+          {
+            "name": "Title",
+            "value": "Segmentation masks"
+          },
+          {
+            "name": "Annotation overview",
+            "value": ""
+          },
+          {
+            "name": "File List",
+            "value": "ZeroCostDl4Mic/Stardist_v2/metadata.tsv"
+          }
+        ]
+      }
+    ]
+  },
+  "type": "submission"
+}
