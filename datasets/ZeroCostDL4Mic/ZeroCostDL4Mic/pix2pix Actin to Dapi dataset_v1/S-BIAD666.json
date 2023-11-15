@@ -6,19 +6,19 @@
     },
     {
       "name": "Title",
-      "value": "ZeroCostDL4Mic - Stardist example training and test dataset"
+      "value": "ZeroCostDL4Mic - pix2pix example training and test dataset"
     },
     {
       "name": "ReleaseDate",
-      "value": "2023-10-30"
+      "value": "2023-10-30" 
     },
     {
       "name": "RootPath",
-      "value": ""
+      "value": "ZeroCostDL4Mic" 
     },
     {
       "name": "AttachTo",
-      "value": "BioImages"
+      "value": "BioImages" 
     }
   ],
   "section": {
@@ -26,23 +26,23 @@
     "attributes": [
       {
         "name": "Description",
-        "value": "A dataset consisting of paired microscopy images (fluorescence) and corresponding masks. Microscopy data type: Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation."
+        "value": "A dataset consisting of paired microscopy images (fluorescence) of lifeact-RFP and sir-DNA. Microscopy data type: Fluorescence microscopy. Microscope: Spinning disk confocal microscope with a 20x 0.8 NA objective. Cell type: DCIS.COM Lifeact-RFP cells. File format: .png (RGB images). Image size: 1024x1024 (Pixel size: 634 nm)." 
       },
       {
         "name": "Keyword",
-        "value": "Deep learning"
+        "value": "Deep learning" 
       },
       {
         "name": "Keyword",
-        "value": "Image segmentation"
+        "value": "Image segmentation" 
       },
       {
         "name": "Keyword",
-        "value": "Stardist"
+        "value": "Stardist" 
       },
       {
         "name": "Keyword",
-        "value": "Microscopy"
+        "value": "Microscopy" 
       }
     ],
     "links": [
@@ -287,7 +287,7 @@
           },
           {
             "name": "File List",
-            "value": "ZeroCostDl4Mic/Stardist_v2/metadata.tsv"
+            "value": "ZeroCostDl4Mic/pix2pix Actin to Dapi dataset_v1/metadata.tsv"
           }
         ]
       }
