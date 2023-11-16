@@ -10,15 +10,15 @@
     },
     {
       "name": "ReleaseDate",
-      "value": "2023-10-30" 
+      "value": "2023-10-30"
     },
     {
       "name": "RootPath",
-      "value": "ZeroCostDL4Mic" 
+      "value": "ZeroCostDL4Mic"
     },
     {
       "name": "AttachTo",
-      "value": "BioImages" 
+      "value": "BioImages"
     }
   ],
   "section": {
@@ -26,23 +26,23 @@
     "attributes": [
       {
         "name": "Description",
-        "value": "A dataset consisting of paired microscopy images (fluorescence) of lifeact-RFP and sir-DNA. Microscopy data type: Fluorescence microscopy. Microscope: Spinning disk confocal microscope with a 20x 0.8 NA objective. Cell type: DCIS.COM Lifeact-RFP cells. File format: .png (RGB images). Image size: 1024x1024 (Pixel size: 634 nm)." 
+        "value": "A dataset consisting of paired microscopy images (fluorescence) of lifeact-RFP and sir-DNA. Microscopy data type: Fluorescence microscopy. Microscope: Spinning disk confocal microscope with a 20x 0.8 NA objective. Cell type: DCIS.COM Lifeact-RFP cells. File format: .png (RGB images). Image size: 1024x1024 (Pixel size: 634 nm)."
       },
       {
         "name": "Keyword",
-        "value": "Deep learning" 
+        "value": "Deep learning"
       },
       {
         "name": "Keyword",
-        "value": "Image segmentation" 
+        "value": "Image segmentation"
       },
       {
         "name": "Keyword",
-        "value": "Stardist" 
+        "value": "Stardist"
       },
       {
         "name": "Keyword",
-        "value": "Microscopy" 
+        "value": "Microscopy"
       }
     ],
     "links": [
