@@ -7,11 +7,11 @@
     },
     {
       "name": "Title",
-      "value": "ZeroCostDL4Mic - Stardist example training and test dataset"
+      "value": "ZeroCostDL4Mic - YoloV2 example training and test dataset"
     },
     {
       "name": "ReleaseDate",
-      "value": "2024-10-30"
+      "value": "2020-07-17"
     },
     {
       "name": "RootPath",
@@ -27,7 +27,7 @@
     "attributes": [
       {
         "name": "Description",
-        "value": "A dataset consisting of paired microscopy images (fluorescence) and corresponding masks. Microscopy data type: Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation."
+        "value": "UNSURE"
       },
       {
         "name": "Keyword",
@@ -48,7 +48,7 @@
     ],
     "links": [
       {
-        "url": "https://doi.org/10.5281/zenodo.3715492",
+        "url": "https://zenodo.org/records/3941908",
         "attributes": [
           {
             "name": "Description",
@@ -267,7 +267,7 @@
           },
           {
             "name": "File List",
-            "value": "ZeroCostDL4Mic/Stardist_v2/metadata.tsv"
+            "value": "ZeroCostDL4Mic/YoloV2 dataset_v1/metadata.tsv"
           }
         ]
       }
