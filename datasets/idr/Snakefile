@@ -167,35 +167,15 @@ def expand_wildcards_from_checkpoint(wildcards):
 checkpoint get_image_metadata:
     # conda:
     # "enviroment.yaml"
-    resources:
-        mem_mb=32000,
+    # resources:
+        # mem_mb=32000,
     input:
         json="results/{screen_name}/image_ids.json",
         image_ids="results/{screen_name}/image_ids.json",
     output:
         metadata="results/{screen_name}/metadata.json",
-    run:
-
-        conn = connection("idr.openmicroscopy.org")
-        with open(input.image_ids, 'r') as f:
-            image_ids = json.load(f)
-        breakpoint()
-        # with open(input.image_ids) as f:
-            # breakpoint()
-            # image_ids = [int(x.strip()) for x in f.readlines()]
-        metadata = {}
-        for image_id in tqdm(image_ids):
-            image = conn.getObject("Image", image_id)
-            z = image.getSizeZ()
-            c = image.getSizeC()
-            t = image.getSizeT()
-            metadata[str(image_id)] = {"z": z, "c": c, "t": t}
-        
-        with open(output.metadata, "w") as f:
-            json.dump(metadata, f)
-        conn._closeSession()
-        print("get_image_metadata: Done")
-
+    script:
+      "scripts/get_image_metadata.py"
 
 rule download_images:
     # conda:
@@ -206,20 +186,22 @@ rule download_images:
         metadata="results/{screen_name}/metadata.json",
     output:
         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
-    run:
-        from idr_funs import download_image
-        from idr import connection
+    script:
+        "scripts/download_images.py"
+    # run:
+    #     from idr_funs import download_image
+    #     from idr import connection
 
-        conn = connection("idr.openmicroscopy.org")
-        download_image(
-            conn,
-            wildcards.image_id,
-            output.tiff,
-            int(wildcards.z),
-            int(wildcards.c),
-            int(wildcards.t),
-        )
-        conn._closeSession()
+    #     conn = connection("idr.openmicroscopy.org")
+    #     download_image(
+    #         conn,
+    #         wildcards.image_id,
+    #         output.tiff,
+    #         int(wildcards.z),
+    #         int(wildcards.c),
+    #         int(wildcards.t),
+    #     )
+    #     conn._closeSession()
 
 
 rule convert_tiff_to_ngff:
