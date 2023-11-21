@@ -1,7 +1,7 @@
-name: idr-py-download
 channels:
 - conda-forge
 - bioconda
+- ome
 dependencies:
 - python=3.9
 - idr-py
@@ -11,5 +11,6 @@ dependencies:
 - mamba
 - snakemake
 - idr
+- bioformats2raw
 - pip:
   - ome-zarr
