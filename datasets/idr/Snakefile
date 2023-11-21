@@ -2,17 +2,12 @@
 import omero
 import os
 from tqdm import tqdm
-from idr import connection
 import json 
-import idr_funs 
+from scripts import idr_funs 
 from idr import connection
-
-# screen_names = ["idr0093-mueller-perturbation/screenA"]
-
-# print(screen_names)
-# breakpoint()
 
 data_sizes = list(map(int,[1e5,1e6,5e5]))
+
 def get_hcs():
     # breakpoint()
     conn = connection("idr.openmicroscopy.org")
@@ -42,7 +37,7 @@ def expand_from_metadata(wildcards):
     for image_id, zct in tqdm(metadata.items()):
         input_files.extend(
             expand(
-                "results/{{screen_name}}/{image_id}/{z}_{c}_{t}.tiff",
+                "results/{{screen_name}}/{image_id}/{z}_{c}_{t}.ome.ngff",
                 image_id=image_id,
                 z=range(zct["z"]),
                 c=range(zct["c"]),
@@ -52,13 +47,10 @@ def expand_from_metadata(wildcards):
     return input_files
 
 def expand_from_screens(wildcards):
-    # breakpoint()
     checkpoint_output = (checkpoints.get_hcs_screens.get(**wildcards).output.screen_names)
-    # breakpoint()
     
     with open(checkpoint_output) as f:
         screen_names = list(json.load(f))
-    # breakpoint()
     return expand("results/{screen_name}/image_ids.json",screen_name=screen_names)
 
 def get_organism_screenids(session, organism, idr_base_url="https://idr.openmicroscopy.org"):  
@@ -72,17 +64,8 @@ def get_organism_screenids(session, organism, idr_base_url="https://idr.openmicr
         screen_id_list.append(str(s["id"]))  
     return screen_id_list
 
-
 rule all:
-    # conda:
-    # "enviroment.yaml"
-    # image_ids = get_image_ids()
     input:
-        # expand_from_metadata,
-        # expand("results/{image_id}.tif", image_id=lambda wildcards: expand_wildcards_from_checkpoint(wildcards)),
-        # expand_from_metadata,
-        # expand("results/{image_id}.tif", image_id=image_ids)
-        # expand("{screen_name}/image_ids.txt",screen_name=screen_names),
         "results/screen_names.json",
         "results/image_ids.json",
         expand("results/{screen_name}/downloaded.flag",screen_name=screen_names)
@@ -98,18 +81,16 @@ checkpoint get_hcs_screens:
         with open(output.screen_names, "w") as f:
             json.dump(screen_names, f)
 
-rule download_all_images:
+rule download_all_images_per_screen:
   input:
     metadata=expand_from_metadata
   output:
     flag=touch("results/{screen_name}/downloaded.flag")
-
     
 rule collate_image_ids:
     input:
         screen_names="results/screen_names.json",
         json=expand_from_screens
-        # jsons=expand("{screen_name}/image_ids.json",screen_name=screen_names)
     output:
         json="results/image_ids.json"
     shell:
@@ -124,16 +105,10 @@ rule reduce_image_set:
         "jq -n --argjson size {wildcards.data_size} '[inputs] | flatten | .[range(0; $size | tonumber)]' {input.image_ids} > {output.subset}"
 
 rule generate_image_ids:
-    # conda:
-    # "enviroment.yaml"
     output:
         image_ids=touch("results/{screen_name}/image_ids.json"),
     resources:
         mem_mb=16000,
-    # shell:
-    #     """
-    #     touch {output.image_ids}
-    #     """
     run:
         conn = connection("idr.openmicroscopy.org")
         # image_ids = get_image_ids
@@ -165,10 +140,6 @@ def expand_wildcards_from_checkpoint(wildcards):
 
 
 checkpoint get_image_metadata:
-    # conda:
-    # "enviroment.yaml"
-    # resources:
-        # mem_mb=32000,
     input:
         json="results/{screen_name}/image_ids.json",
         image_ids="results/{screen_name}/image_ids.json",
@@ -178,8 +149,6 @@ checkpoint get_image_metadata:
       "scripts/get_image_metadata.py"
 
 rule download_images:
-    # conda:
-    # "enviroment.yaml"
     resources:
         mem_mb=1000,
     input:
@@ -188,21 +157,6 @@ rule download_images:
         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
     script:
         "scripts/download_images.py"
-    # run:
-    #     from idr_funs import download_image
-    #     from idr import connection
-
-    #     conn = connection("idr.openmicroscopy.org")
-    #     download_image(
-    #         conn,
-    #         wildcards.image_id,
-    #         output.tiff,
-    #         int(wildcards.z),
-    #         int(wildcards.c),
-    #         int(wildcards.t),
-    #     )
-    #     conn._closeSession()
-
 
 rule convert_tiff_to_ngff:
   input:
@@ -211,7 +165,7 @@ rule convert_tiff_to_ngff:
     ngff=directory("results/{screen_name}/{image_id}/{z}_{c}_{t}.ome.ngff"),
   shell:
     """
-    bioformats2raw {input.tiff} {output.ngff}
+      bioformats2raw {input.tiff} {output.ngff}
     """
 
 # def expand_from_metadata(wildcards):
