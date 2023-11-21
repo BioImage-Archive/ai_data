@@ -71,8 +71,8 @@ rule all:
         expand("results/{screen_name}/downloaded.flag",screen_name=screen_names)
 
 checkpoint get_hcs_screens:
-    input:
-        screen_names=expand_from_screens
+    # input:
+        # screen_names=expand_from_screens
     output:
         screen_names="results/screen_names.json",
     run:
