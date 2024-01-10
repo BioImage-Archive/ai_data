@@ -1,0 +1,273 @@
+{
+  "accno": "S-BIAD989",
+  "attributes": [
+    {
+      "name": "REMBI_PageTab Conversion Script Version",
+      "value": "1.0.0"
+    },
+    {
+      "name": "Title",
+      "value": "ZeroCostDL4Mic - pix2pix example training and test dataset"
+    },
+    {
+      "name": "ReleaseDate",
+      "value": "2024-07-17"
+    },
+    {
+      "name": "AttachTo",
+      "value": "BioImages"
+    }
+  ],
+  "section": {
+    "type": "Study",
+    "attributes": [
+      {
+        "name": "Description",
+        "value": ""
+      },
+      {
+        "name": "Keyword",
+        "value": "Deep learning"
+      },
+      {
+        "name": "Keyword",
+        "value": "Image segmentation"
+      },
+      {
+        "name": "Keyword",
+        "value": "Stardist"
+      },
+      {
+        "name": "Keyword",
+        "value": "Microscopy"
+      }
+    ],
+    "links": [
+      {
+        "url": "https://zenodo.org/records/3941889",
+        "attributes": [
+          {
+            "name": "Description",
+            "value": "Original submission (not curated)"
+          }
+        ]
+      }
+    ],
+    "subsections": [
+      {
+        "type": "author",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Johanna Jukkala"
+          },
+          {
+            "name": "affiliation",
+            "value": "1) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, 20520 Turku, Finland 2) Turku Bioscience Centre, University of Turku and Åbo Akademi University, FI-20520 Turku, Finland",
+            "reference": true
+          },
+          {
+            "name": "Role",
+            "value": "submitter"
+          }
+        ]
+      },
+      {
+        "type": "author",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Craig Russell"
+          },
+          {
+            "name": "affiliation",
+            "value": "European Molecular Biology Laboratory, European Bioinformatics Institute",
+            "reference": true
+          },
+          {
+            "name": "Role",
+            "value": "data curator"
+          }
+        ]
+      },
+      {
+        "accno": "o1",
+        "type": "organization",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Faculty of Science and Engineering, Cell Biology, Åbo Akademi University"
+          },
+          {
+            "name": "Address",
+            "value": "20520 Turku, Finland"
+          }
+        ]
+      },
+      {
+        "accno": "o2",
+        "type": "organization",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "European Molecular Biology Laboratory, European Bioinformatics Institute"
+          },
+          {
+            "name": "Address"
+          }
+        ]
+      },
+      {
+        "type": "Publication",
+        "attributes": [
+          {
+            "name": "Title"
+          },
+          {
+            "name": "Year",
+            "value": "2020"
+          },
+          {
+            "name": "Authors"
+          },
+          {
+            "name": "DOI",
+            "value": "https://doi.org/10.5281/zenodo.3941889"
+          },
+          {
+            "name": "PMC ID"
+          }
+        ]
+      },
+      {
+        "accno": "Biosample-1",
+        "type": "Biosample",
+        "attributes": [
+          {
+            "name": "Title",
+            "value": ""
+          },
+          {
+            "name": "Biological entity",
+            "value": ""
+          },
+          {
+            "name": "Description"
+          }
+        ],
+        "subsections": [
+          {
+            "accno": "Organism-1",
+            "type": "Organism",
+            "attributes": [
+              {
+                "name": "Scientific name"
+              },
+              {
+                "name": "Common name"
+              },
+              {
+                "name": "NCBI taxon ID"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accno": "Specimen-1",
+        "type": "Specimen",
+        "attributes": [
+          {
+            "name": "Title"
+          },
+          {
+            "name": "Sample Preparation Protocol"
+          }
+        ]
+      },
+      {
+        "accno": "Image Acquisition-1",
+        "type": "Image Acquisition",
+        "attributes": [
+          {
+            "name": "Title"
+          },
+          {
+            "name": "Imaging Instrument"
+          },
+          {
+            "name": "Image Acquisition Parameters"
+          }
+        ],
+        "subsections": [
+          {
+            "accno": "Imaging Method-1",
+            "type": "Imaging Method",
+            "attributes": [
+              {
+                "name": "Ontology Value",
+                "value": "Fluorescence microscopy"
+              },
+              {
+                "name": "Ontology Name",
+                "value": ""
+              },
+              {
+                "name": "Ontology Term ID",
+                "value": "http://edamontology.org/topic_3954"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accno": "Study Component-1",
+        "type": "Study Component",
+        "attributes": [
+          {
+            "name": "Name",
+            "value": "Microscopy images (fluorescence)"
+          },
+          {
+            "name": "Description"
+          }
+        ],
+        "subsections": [
+          {
+            "type": "Associations",
+            "attributes": [
+              {
+                "name": "Biosample",
+                "value": "Microscopy images (fluorescence)"
+              },
+              {
+                "name": "Specimen"
+              },
+              {
+                "name": "Image acquisition"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "accno": "Annotations-1",
+        "type": "Annotations",
+        "attributes": [
+          {
+            "name": "Title",
+            "value": "Segmentation masks"
+          },
+          {
+            "name": "Annotation overview"
+          },
+          {
+            "name": "File List",
+            "value": "ZeroCostDL4Mic/pix2pix Actin to Dapi dataset_v1/file_list.tsv"
+          }
+        ]
+      }
+    ]
+  },
+  "type": "submission"
+}
