@@ -7,12 +7,19 @@ import pathlib
 with open("metadata.json") as f:
     metadata = json.load(f)
 
+# import logging
+# logger = logging.getLogger(__name__)
+
 projects_metadata = list(metadata.keys())
+projects_metadata.remove("CycleGAN SDCM to SRRF_v1")
+projects_metadata.remove("DeepSTORM dataset_v1")
+# projects_metadata = ["YoloV2 dataset_v1"]
 meta_project_name = "ZeroCostDL4Mic"
-print(projects_metadata)
-metadata_files = ["metadata.json", "metadata.tsv","file_list_annotations.json"]
+# print(projects_metadata)
+metadata_files = ["metadata.tsv","file_list.tsv","annotations_list.tsv"]
 rule all:
     input:
+        "metadata.json",
         expand("{meta_project}/{project}/{metadata_files}",meta_project=meta_project_name,
         project=projects_metadata,
         metadata_files=metadata_files,
@@ -36,15 +43,10 @@ checkpoint download_and_extract:
 
 def get_jsons(wildcards):
     # breakpoint()
-    print(wildcards.project)
     checkpoint_output = checkpoints.download_and_extract.get(**wildcards).output
     # breakpoint()
     glob_string = f"data/{wildcards.project}/{{folder,.*}}/{{filename,[^/.][^/]*}}.{{ext,[^.]+}}" 
     folders, filenames, ext = glob_wildcards(glob_string)
-    print(set(folders))
-    print(set(filenames))
-    print(set(ext))
-    # breakpoint()
     file_list = expand(
         f"{wildcards.meta_project}/{wildcards.project}/{{folder}}/{{filename}}.{{ext}}.metadata.json",
         zip,
@@ -100,13 +102,11 @@ def transform_row_to_dict(row):
 checkpoint collate_json:
     input:
         json=get_jsons,
-        # json=get_metadata
     output:
         # json="{meta_project}/{project}/metadata.json",
         metadata_tsv="{meta_project}/{project}/metadata.tsv",
-        metadata_json="{meta_project}/{project}/metadata.json",
-        file_list="{meta_project}/{project}/file_list.tsv",
-        file_list_annotations="{meta_project}/{project}/file_list_annotations.json",
+        file_list_tsv="{meta_project}/{project}/file_list.tsv",
+        annotations_list_tsv="{meta_project}/{project}/annotations_list.tsv",
     run:
         # with open(input.json, 'r') as f:
         #   file_list = json.load(f)
@@ -119,24 +119,29 @@ checkpoint collate_json:
             # Set the name of the index as the filepath
             # I think this needs to be smarter
             df["Files"] = json_file.replace('.metadata.json', '')
-            df['Files'] = df['Files'].str.replace('ZeroCostDL4Mic/', '')
+            # df['Files'] = df['Files'].str.replace('ZeroCostDL4Mic/', '')
             df.set_index("Files", inplace=True)
 
             # Append the DataFrame to the list
-            # breakpoint()
             dfs.append(df)
 
             # Concatenate all the DataFrames
         final_df = pd.concat(dfs)
-        final_df.to_json(output.metadata_json, orient="index", indent=4)
-        final_df.to_csv(output.metadata_tsv, sep='\t')
-        transformed_data = final_df.apply(transform_row_to_dict, axis=1).tolist()
+
+        annotations_list_tsv = final_df[final_df["source image"]==""]
+        file_list_tsv = final_df.drop(annotations_list_tsv.index)
+        mapper = {
+          output.metadata_tsv: final_df,
+          output.file_list_tsv: file_list_tsv,
+          output.annotations_list_tsv: annotations_list_tsv,
+        }
+        mapper.items()
+        for file_name,df_to_save in mapper.items():
+            df_to_save.to_csv(file_name, sep='\t')
+        # breakpoint()
         # no_source_image = final_df.loc[final_df['source image'].isnull()]
         # breakpoint()
         # Save the list to a JSON file
-        with open(output.file_list_annotations, 'w') as f:
-            json.dump(transformed_data, f, indent=4)
-        # breakpoint()
 
 
 rule copy_image:
@@ -178,13 +183,14 @@ rule process_image:
 
         # Check if the metadata key exists
         metadata_key = metadata[wildcards.project].get("data", {}).get(wildcards.project+"/"+wildcards.folder, {})
-
         if not metadata_key:
             print(f"skip {wildcards.project}/{wildcards.folder}")
         else:
             # Check if 'source image' exists in metadata_key
             if 'source image' in metadata_key:
-                source_image = f"{wildcards.project}/{metadata_key['source image']}/{wildcards.filename}.{wildcards.ext}"
+              if metadata_key["source image"] != "":
+                source_image = f"{wildcards.meta_project}/{wildcards.project}/{metadata_key['source image']}/{wildcards.filename}.{wildcards.ext}"
+                # breakpoint()
                 metadata_key["source image"] = source_image
 
         metadata_dict = metadata_key
