@@ -1,0 +1,28 @@
+[
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN4 - Training dataset",
+          "Train-/Testset split": "train",
+          "source image": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN4 - Training dataset"
+        }
+      }
+    ]
+  },
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN10 - Training dataset",
+          "Train-/Testset split": "train",
+          "source image": "DeepSTORM dataset_v1/DeepSTORM dataset_v1/BIN10 - Training dataset"
+        }
+      }
+    ]
+  }
+]

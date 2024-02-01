@@ -1,0 +1,28 @@
+[
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "Noise2Void (2D)/Noise2Void (2D)/Test - Images",
+          "Train-/Testset split": "test",
+          "source image": "Noise2Void (2D)/Noise2Void (2D)/Test - Images"
+        }
+      }
+    ]
+  },
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "Noise2Void (2D)/Noise2Void (2D)/Training",
+          "Train-/Testset split": "train",
+          "source image": "Noise2Void (2D)/Noise2Void (2D)/Training"
+        }
+      }
+    ]
+  }
+]

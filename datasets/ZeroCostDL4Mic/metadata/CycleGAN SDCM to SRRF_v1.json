@@ -1,0 +1,54 @@
+[
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - test",
+          "Train-/Testset split": "test",
+          "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - test"
+        }
+      }
+    ]
+  },
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - training",
+          "Train-/Testset split": "train",
+          "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - training"
+        }
+      }
+    ]
+  },
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - test",
+          "Train-/Testset split": "test",
+          "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - test"
+        }
+      }
+    ]
+  },
+  {
+    "url": "",
+    "folder": [
+      {
+        "url": "",
+        "folder": {
+          "folder": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - training",
+          "Train-/Testset split": "train",
+          "source image": "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - training"
+        }
+      }
+    ]
+  }
+]
