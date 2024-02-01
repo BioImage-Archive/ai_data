@@ -1,37 +1,34 @@
 study:
-  title: # Required # This will be displayed when search results including your data are shown
-  description: # Required # Overall description of the dataset, can be a publication abstract.
-  private_until_date: # Required # Day in the YYYY-mm-dd format by which the submission will be private. You can use a date far in the future initially and change it later
-  keywords: # Required # Key words relating to the study - add multiple keywords in separate lines as shown below
-  - Keyword 1
-  - Keyword 2
-  authors: # Add more authors by repeating the block below
-  - first_name: # Required
-    last_name: # Required
-    email: # Optional # email address for an author
-    role: # Required # Role of the author when creating the dataset, e.g. submitter, annotator, corresponding author
-    orcid: # Optional # ORCID unique identifier for an author
+  title: "ZeroCostDL4Mic - Noise2Void (3D) example training and test dataset"
+  description: "A dataset for 3D image denoising tasks with paired fluorescence microscopy images of A2780 ovarian carcinoma cells."
+  private_until_date: "2024-07-17"
+  keywords:
+  - Deep learning
+  - Microscopy
+  - Denoising
+  - Noise2Void
+  - 3D imaging
+  authors:
+  - first_name: Guillaume
+    last_name: Jacquemet
+    role: Submitter
     affiliation:
-      name: # Required # The name of the organisation.
-      address: # Optional # The address of the organisation.
+      name: "1) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, 20520 Turku, Finland 2) Turku Bioscience Centre, University of Turku and Åbo Akademi University, FI-20520 Turku, Finland"
   funding:
-    funding_statement: # Optional # A description of how the data generation was funded
-    grant_references: # Add more grant references by repeating the block below
-    - funder: # Optional # The funding body providing support
-      identifier: # Optional # Grant identifier 
+    funding_statement: "Supported by grants from the Academy of Finland, the Sigrid Juselius Foundation, and Åbo Akademi University Research Foundation (CoE CellMech), and by strategic funding to Åbo Akademi University from Drug Discovery and Diagnostics."
   publications:
-  - title: # Optional # Title of associated publication.
-    authors: # Optional # Authors of associated publication.
-    doi: # Optional # Digital Object Identifier (DOI).
-    year: # Optional # Year of publication.
-    pubmed_id: # Optional # PubMed identifier for the publication.
-  links: # Add more links by repeating the block below. Please include here any AI models trained with your dataset
-  - link_url: # Optional # URL of relevant link 
-    link_description: # Optional # The type of the link.
-  acknowledgements: # Optional # Any people or groups that should be acknowledged as part of the dataset
-  rembi_version: '1.5' # Do not edit this
-biosamples: # Add more biosamples by repeating the block below.
-  First biosample: # You can edit this to be more descriptive e.g. in utero mouse embryos, stage 7 fruit fly embryos. But you will need to edit the name section in the associations section below 
+  - doi: "https://doi.org/10.1038/nprot.2017.107"
+    title: "A guide to super-resolution fluorescence microscopy"
+    year: 2017
+  links:
+  - link_url: "https://zenodo.org/records/3713326"
+    link_description: "Original submission"
+  acknowledgements:
+  rembi_version: '1.5'
+biosamples:
+  Biosample-1:
+    description: "3D fluorescence microscopy images of A2780 ovarian carcinoma cells."
+    biological_entity: "A2780 ovarian carcinoma cells"
     organism:
       scientific_name: "Homo sapiens"
       ncbi_taxon: "9606"
@@ -41,17 +38,17 @@ specimens:
     sample_preparation: "Transient transfection with Lifeact-RFP"
 acquisitions:
   Image Acquisition-1:
-    imaging_instrument: ""
-    image_acquisition_parameters: ""
+    imaging_instrument: "UNSURE"
+    image_acquisition_parameters: "UNSURE"
     imaging_method:
-      value: # Required # What method was used to generate the images (e.g. bright-field microscopy)
-      ontology_id: # Required # e.g. http://purl.obolibrary.org/obo/FBbi_00000243 - Leave blank if not known
-      ontology_name: # Required # e.g. Biological Imaging Methods Ontology (FBbi) - Leave blank if not known
-
+      value: "Spinning disk confocal microscopy"
+      ontology_id: "http://edamontology.org/topic_3954"
+      ontology_name: "EDAM"
+    description: "Captured using a 63x 1.4 NA objective lens, 512x512x13 resolution, pixel size x,y: 195 nm, z: 500 nm."
 annotations:
   Annotations:
-    annotation_overview: ""
-    annotation_method: ""
+    annotation_overview: "UNSURE"
+    annotation_method: "UNSURE"
 version:
   Annotations:
     version: "1.0.0"
@@ -60,7 +57,7 @@ version:
 study_component:
   Study Component-1:
     name: "Microscopy images (fluorescence)"
-    description: ""
+    description: "UNSURE"
     rembi_version: '1.5'
 associations:
   Study Component-1:
