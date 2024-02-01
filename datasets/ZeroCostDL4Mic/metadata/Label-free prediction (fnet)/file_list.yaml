@@ -1,0 +1,14 @@
+url: https://zenodo.org/record/3748967/files/Label-free%20prediction%20%28fnet%29%20v2.zip?download=1
+data:
+  Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Test dataset/Test - TOM20 fluorescence stacks_Split_data:
+    Train-/Testset split: test
+    source image: Label-free prediction (fnet) v2Label-free prediction (fnet) v2/Test dataset/Test - TOM20 fluorescence stacks_Split_data
+  Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Test dataset/Test - Transmitted light stacks_Split_data:
+    Train-/Testset split: test
+    source image: Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Test dataset/Test - Transmitted light stacks_Split_data
+  Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - TOM20 fluorescence stacks_Split_data:
+    Train-/Testset split: train
+    source image: Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - TOM20 fluorescence stacks_Split_data
+  Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - Transmitted light stacks_Split_data:
+    Train-/Testset split: train
+    source image: Label-free prediction (fnet) v2/Label-free prediction (fnet) v2/Training dataset/Training - Transmitted light stacks_Split_data
