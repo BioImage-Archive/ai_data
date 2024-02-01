@@ -1,0 +1,14 @@
+url: https://zenodo.org/record/3941884/files/CycleGAN%20SDCM%20to%20SRRF_v1.zip?download=1
+data:
+  "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - test":
+    "Train-/Testset split": test
+    "source image": CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - test
+  "CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - training":
+    "Train-/Testset split": train
+    "source image": CycleGAN SDCM to SRRF_v1/CycleGAN/Spinning disk - training
+  "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - test":
+    "Train-/Testset split": test
+    "source image": CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - test
+  "CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - training":
+    "Train-/Testset split": train
+    "source image": CycleGAN SDCM to SRRF_v1/CycleGAN/SRRF - training

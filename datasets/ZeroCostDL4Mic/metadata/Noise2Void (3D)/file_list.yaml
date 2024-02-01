@@ -1,0 +1,14 @@
+url: https://zenodo.org/records/3713326/files/Noise2Void%20(3D).zip?download=1
+data:
+  "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Fibronectin dataset":
+    "Train-/Testset split": train
+    "source image": Noise2Void (3D)/Noise2Void (3D)/Training Image _ Fibronectin dataset
+  "Noise2Void (3D)/Noise2Void (3D)/Test images_ Actin dataset":
+    "Train-/Testset split": test
+    "source image": Noise2Void (3D)/Noise2Void (3D)/Test images_ Actin dataset
+  "Noise2Void (3D)/Noise2Void (3D)/Training Image _ Actin dataset":
+    "Train-/Testset split": train
+    "source image": Noise2Void (3D)/Noise2Void (3D)/Training Image _ Actin dataset
+  "Noise2Void (3D)/Noise2Void (3D)/Test Images _ Fibronectin dataset":
+    "Train-/Testset split": test
+    "source image": Noise2Void (3D)/Noise2Void (3D)/Test Images _ Fibronectin dataset

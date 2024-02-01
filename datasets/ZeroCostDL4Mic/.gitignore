@@ -2,5 +2,6 @@
 !.gitignore
 !Snakefile
 !metadata.json
+!metadata
 !config.yaml
 !**/S-BIAD*.json
