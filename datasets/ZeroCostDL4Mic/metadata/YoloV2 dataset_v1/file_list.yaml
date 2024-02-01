@@ -1,0 +1,14 @@
+url: https://zenodo.org/record/3941908/files/YoloV2%20dataset_v1.zip?download=1
+data:
+  YoloV2 dataset_v1/Training_Images:
+    Train-/Testset split: train
+    source image: ''
+  YoloV2 dataset_v1/Test_Images:
+    Train-/Testset split: test
+    source image: ''
+  YoloV2 dataset_v1/Training_Annotations:
+    Train-/Testset split: train
+    source image: YoloV2 dataset_v1/Training_Images
+  YoloV2 dataset_v1/Test_Annotations:
+    Train-/Testset split: test
+    source image: YoloV2 dataset_v1/Test_Images

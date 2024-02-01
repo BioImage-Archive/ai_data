@@ -1,0 +1,17 @@
+url: https://zenodo.org/record/3715492/files/Stardist_v2.zip?download=1
+data:
+  "Stardist_v2/Stardist/Training - Images":
+    "Train-/Testset split": train
+    "source image": ''
+  "Stardist_v2/Stardist/Test - Images":
+    "Train-/Testset split": test
+    "source image": ''
+  "Stardist_v2/Stardist/Training - Masks":
+    "Train-/Testset split": train
+    "source image": Stardist/Training - Images
+  "Stardist_v2/Stardist/Test - Masks":
+    "Train-/Testset split": test
+    "source image": Stardist/Test - Images
+  "Stardist_v2/Stardist/Test - Stacks":
+    "Train-/Testset split": test
+    "source image": ''

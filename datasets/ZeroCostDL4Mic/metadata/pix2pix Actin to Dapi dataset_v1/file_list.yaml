@@ -1,0 +1,14 @@
+url: https://zenodo.org/record/3941889/files/pix2pix%20Actin%20to%20Dapi%20dataset_v1.zip?download=1
+data:
+  pix2pix Actin to Dapi dataset_v1/Actin - training:
+    Train-/Testset split: train
+    source image: pix2pix Actin to Dapi dataset_v1/Dapi - training
+  pix2pix Actin to Dapi dataset_v1/Actin - test:
+    Train-/Testset split: test
+    source image: pix2pix Actin to Dapi dataset_v1/Dapi - test
+  pix2pix Actin to Dapi dataset_v1/Dapi - training:
+    Train-/Testset split: train
+    source image: pix2pix Actin to Dapi dataset_v1/Actin - training
+  pix2pix Actin to Dapi dataset_v1/Dapi - test:
+    Train-/Testset split: test
+    source image: pix2pix Actin to Dapi dataset_v1/Actin - test
