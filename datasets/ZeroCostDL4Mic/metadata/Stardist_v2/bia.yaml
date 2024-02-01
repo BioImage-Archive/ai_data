@@ -41,6 +41,8 @@ specimens:
     sample_preparation: "UNSURE"
 acquisitions:
   Image Acquisition-1:
+    imaging_instrument: "UNSURE"
+    image_acquisition_parameters: "UNSURE"
     imaging_method:
       value: "Echography"
       ontology_id: "http://edamontology.org/topic_3954"
@@ -50,7 +52,6 @@ annotations:
   Annotations:
     annotation_overview: "UNSURE"
     annotation_method: "Manual segmentation"
-    file_list: "ZeroCostDL4Mic/Stardist_v2/annotations_list.json"
 version:
   Annotations:
     version: "1.0.0"
