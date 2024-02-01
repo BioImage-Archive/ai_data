@@ -1,13 +1,13 @@
 # name: torch
 channels:
-- bioconda
-- idr
-- ome
+# - bioconda
+# - idr
+# - ome
 - conda-forge
 - defaults
 dependencies:
 - python=3.11
-- snakemake
+- bioconda::snakemake
 - pip
 - pip:
   - .
