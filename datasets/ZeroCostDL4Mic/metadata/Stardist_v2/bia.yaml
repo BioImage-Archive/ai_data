@@ -1,48 +1,68 @@
 study:
-  accno: S-BIAD1007
-  title: ZeroCostDL4Mic - Stardist example training and test dataset
-  description: |-
-    A dataset consisting of paired microscopy images (fluorescence) and corresponding masks. Microscopy data type: Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation.
-  private_until_date: 2024-10-30
+  title: "ZeroCostDL4Mic - Stardist example training and test dataset"
+  description: "A dataset consisting of paired microscopy images (fluorescence) and corresponding masks. Microscopy data type: Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation."
+  private_until_date: "2024-10-30"
   keywords:
   - Deep learning
   - Image segmentation
   - Stardist
   - Microscopy
-  links:
-  - link_url: https://doi.org/10.5281/zenodo.3715492
-    link_description: Original submission (not curated)
-  file_list: ZeroCostDL4Mic/Stardist_v2/file_list.tsv
   authors:
-  - name: Johanna Jukkala
-    role: submitter
-    affiliation: o1
-  - name: Craig Russell
-    role: data curator
-    affiliation: o1
-  organisations:
-  - accno: o1
-    type: organisation
+  - first_name: Johanna
+    last_name: Jukkala
+    role: Submitter
+    affiliation:
+      name: "UNSURE"
+  - first_name: Craig
+    last_name: Russell
+    role: Data Curator
+    affiliation:
+      name: "UNSURE"
+  funding:
+    funding_statement: "G.J. was supported by grants from the Academy of Finland, the Sigrid Juselius Foundation, and Åbo Akademi University Research Foundation (CoE CellMech), and by Drug Discovery and Diagnostics strategic funding to Åbo Akademi University."
   publications:
-  - doi: https://doi.org/10.5281/zenodo.3715492
+  - title: "Unpublished"
     year: 2020
-  biosamples:
-  - accno: Biosample-1
-    title:
-    biological_entity:
-  specimens:
-  - accno:
-  study_components:
-  - accno: Study Component-1
-    name: Paired microscopy images (fluorescence) and corresponding masks
-    associations:
-      biosample: Paired microscopy images (fluorescence) and corresponding masks
-  - accno: Study Component-4
-    name: Annotations
-    file_list: ZeroCostDL4Mic/Stardist_v2/annotations_list.json
-  image_acquisitions:
-  - accno: Image Acquisition-1
+  links:
+  - link_url: "https://doi.org/10.5281/zenodo.3715492"
+    link_description: "Original submission (not curated)"
+  acknowledgements:
+  rembi_version: '1.5'
+biosamples:
+  Biosample-1:
+    description: "Paired microscopy images (fluorescence) and corresponding masks"
+    biological_entity: "Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation"
+    organism:
+      scientific_name: "UNSURE"
+      ncbi_taxon: "UNSURE"
+specimens:
+  Specimen-1:
+    description: "UNSURE"
+    sample_preparation: "UNSURE"
+acquisitions:
+  Image Acquisition-1:
     imaging_method:
-    - ontology_value: Echography
-      ontology_name: EDAM
-      ontology_term_id: http://edamontology.org/topic_3954
+      value: "Echography"
+      ontology_id: "http://edamontology.org/topic_3954"
+      ontology_name: "EDAM"
+    description: "UNSURE"
+annotations:
+  Annotations:
+    annotation_overview: "UNSURE"
+    annotation_method: "Manual segmentation"
+    file_list: "ZeroCostDL4Mic/Stardist_v2/annotations_list.json"
+version:
+  Annotations:
+    version: "1.0.0"
+    timestamp: 2020-07-17T00:00:00Z
+    changes: "Initial version"
+study_component:
+  Study Component-1:
+    name: "Paired microscopy images (fluorescence) and corresponding masks"
+    description: "UNSURE"
+    rembi_version: '1.5'
+associations:
+  Study Component-1:
+    biosample_id: "Biosample-1"
+    specimen_id: "Specimen-1"
+    acquisition_id: "Image Acquisition-1"
