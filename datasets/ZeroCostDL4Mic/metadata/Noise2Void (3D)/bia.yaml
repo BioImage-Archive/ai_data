@@ -38,8 +38,8 @@ specimens:
     sample_preparation: "Transient transfection with Lifeact-RFP"
 acquisitions:
   Image Acquisition-1:
-    imaging_instrument: "UNSURE"
-    image_acquisition_parameters: "UNSURE"
+    imaging_instrument: ""
+    image_acquisition_parameters: ""
     imaging_method:
       value: "Spinning disk confocal microscopy"
       ontology_id: "http://edamontology.org/topic_3954"
@@ -47,8 +47,8 @@ acquisitions:
     description: "Captured using a 63x 1.4 NA objective lens, 512x512x13 resolution, pixel size x,y: 195 nm, z: 500 nm."
 annotations:
   Annotations:
-    annotation_overview: "UNSURE"
-    annotation_method: "UNSURE"
+    annotation_overview: ""
+    annotation_method: ""
 version:
   Annotations:
     version: "1.0.0"
@@ -57,7 +57,7 @@ version:
 study_component:
   Study Component-1:
     name: "Microscopy images (fluorescence)"
-    description: "UNSURE"
+    description: ""
     rembi_version: '1.5'
 associations:
   Study Component-1:
