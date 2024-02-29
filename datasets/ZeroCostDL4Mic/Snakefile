@@ -2,21 +2,32 @@ import json
 import os
 import pandas as pd
 import pathlib
+import os
+import yaml
 
 # Read the input JSON file
-with open("metadata.json") as f:
-    metadata = json.load(f)
+# with open("metadata.json") as f:
+#     metadata = json.load(f)
 
 # import logging
 # logger = logging.getLogger(__name__)
-
-projects_metadata = list(metadata.keys())
-projects_metadata.remove("CycleGAN SDCM to SRRF_v1")
-projects_metadata.remove("DeepSTORM dataset_v1")
-# projects_metadata = ["YoloV2 dataset_v1"]
+# All of this should be in a config file in this dir really
+metadata_dir = "metadata"
+projects_metadata = os.listdir(metadata_dir)
 meta_project_name = "ZeroCostDL4Mic"
-# print(projects_metadata)
-metadata_files = ["metadata.tsv","file_list.tsv","annotations_list.tsv"]
+metadata_files = [
+    "metadata.tsv",
+    "file_list.tsv",
+    "annotations_list.tsv",
+    "pagetab.tsv",
+]
+
+
+def load_yaml(file):
+    with open(file) as f:
+        return yaml.safe_load(f)
+
+
 rule all:
     wildcard_constraints:
         meta_project="[^/]*",
@@ -25,10 +36,11 @@ rule all:
         filename="[^/.]*",
         ext="[^.]*",
     input:
-        "metadata.json",
-        expand("{meta_project}/{project}/{metadata_files}",meta_project=meta_project_name,
-        project=projects_metadata,
-        metadata_files=metadata_files,
+        expand(
+            "{meta_project}/{project}/{metadata_files}",
+            meta_project=meta_project_name,
+            project=projects_metadata,
+            metadata_files=metadata_files,
         ),
         # expand("{project}/file_list.yaml",project=projects_metadata),
         # Download_and_extract 
@@ -56,7 +68,6 @@ rule:
         accession=lambda wildcards, input: pathlib.Path(input.accession).read_text(),
     shell:
         """
-        # touch "{output.pagetab}"
         bia-agent rembi-to-pagetab "{input.agent_config}" > "{output.pagetab}" {params.accession}
         """
 
@@ -69,12 +80,12 @@ checkpoint download_and_extract:
         filename="[^/.]*",
         ext="[^.]*",
     input:
-        metadata_json="metadata.json",
+        mapper=metadata_dir + "/{project}/file_list.yaml",
     output:
         folder=directory("data/{project,[^/]+}"),
         archive="{project,[^/]+}.zip",
     params:
-        url=lambda wildcards, input: metadata[wildcards.project]["url"],
+        url=lambda wildcards, input: load_yaml(input.mapper)["url"],
     shell:
         """
         wget "{params.url}" -O "{output.archive}"
@@ -82,11 +93,12 @@ checkpoint download_and_extract:
         unzip "{output.archive}" -d "{output.folder}"
         """
 
+
 def get_jsons(wildcards):
-    # breakpoint()
     checkpoint_output = checkpoints.download_and_extract.get(**wildcards).output
-    # breakpoint()
-    glob_string = f"data/{wildcards.project}/{{folder,.*}}/{{filename,[^/.][^/]*}}.{{ext,[^.]+}}" 
+    glob_string = (
+        f"data/{wildcards.project}/{{folder,.*}}/{{filename,[^/.][^/]*}}.{{ext,[^.]+}}"
+    )
     folders, filenames, ext = glob_wildcards(glob_string)
     file_list = expand(
         f"{wildcards.meta_project}/{wildcards.project}/{{folder}}/{{filename}}.{{ext}}.metadata.json",
@@ -99,7 +111,6 @@ def get_jsons(wildcards):
     )
 
     # breakpoint()
-
 
     return file_list
 
@@ -117,35 +128,37 @@ rule save_file_list:
         file_list = get_jsons(wildcards)
         if file_list == []:
             raise Exception("No files found")
-        # breakpoint()
+            # breakpoint()
         with open(output.json, "w") as f:
             json.dump(file_list, f, indent=4)
-        # shell(f"echo '{file_list}' > {output.json_file}")
+            # shell(f"echo '{file_list}' > {output.json_file}")
+
+
 
 def get_metadata(wildcards):
-  file_list_json = f"{wildcards.meta_project}/{wildcards.project}/file_list.json"
-  with open(file_list_json) as f:
-    file_list = json.load(f)
-  return file_list
+    file_list_json = f"{wildcards.meta_project}/{wildcards.project}/file_list.json"
+    with open(file_list_json) as f:
+        file_list = json.load(f)
+    return file_list
+
 
 def transform_row_to_dict(row):
     # Create a dictionary with the desired structure
     transformed_dict = {
         "path": row.name,  # Assuming the index of the DataFrame is the path
         "attributes": [],
-        "type": "file"
+        "type": "file",
     }
-    
+
     # Add the column names and their corresponding values to the "attributes" list
     for column_name, column_value in row.items():
-        attribute = {
-            "name": column_name,
-            "value": column_value
-        }
+        attribute = {"name": column_name, "value": column_value}
         transformed_dict["attributes"].append(attribute)
-    
+
     return transformed_dict
 
+
+# Make this into function and call with shell
 checkpoint collate_json:
     wildcard_constraints:
         meta_project="[^/]*",
@@ -161,61 +174,49 @@ checkpoint collate_json:
         file_list_tsv="{meta_project}/{project}/file_list.tsv",
         annotations_list_tsv="{meta_project}/{project}/annotations_list.tsv",
     run:
-        # with open(input.json, 'r') as f:
-        #   file_list = json.load(f)
         # Create an empty list to store individual DataFrames
         dfs = []
-        # Iterate over the input JSON files
         for json_file in input.json:
             # Read JSON into a DataFrame
             df = pd.read_json(json_file, orient="index").T
             # Set the name of the index as the filepath
             # I think this needs to be smarter
-            df["Files"] = json_file.replace('.metadata.json', '')
-            # df['Files'] = df['Files'].str.replace('ZeroCostDL4Mic/', '')
+            df["Files"] = json_file.replace(".metadata.json", "")
             df.set_index("Files", inplace=True)
 
-            # Append the DataFrame to the list
             dfs.append(df)
 
-            # Concatenate all the DataFrames
         final_df = pd.concat(dfs)
 
-        annotations_list_tsv = final_df[final_df["source image"]==""]
+        annotations_list_tsv = final_df[final_df["source image"] == ""]
         file_list_tsv = final_df.drop(annotations_list_tsv.index)
         mapper = {
-          output.metadata_tsv: final_df,
-          output.file_list_tsv: file_list_tsv,
-          output.annotations_list_tsv: annotations_list_tsv,
+            output.metadata_tsv: final_df,
+            output.file_list_tsv: file_list_tsv,
+            output.annotations_list_tsv: annotations_list_tsv,
         }
         mapper.items()
-        for file_name,df_to_save in mapper.items():
-            df_to_save.to_csv(file_name, sep='\t')
-        # breakpoint()
-        # no_source_image = final_df.loc[final_df['source image'].isnull()]
-        # breakpoint()
-        # Save the list to a JSON file
+        for file_name, df_to_save in mapper.items():
+            df_to_save.to_csv(file_name, sep="\t")
 
 
 rule copy_image:
-  input:
-    image="data/{project}/{folder}/{filename}.{ext}",
-    # bkup="{meta_project}/{project}/{folder}/{filename}.{ext}.metadata.json",
-  wildcard_constraints:
+    input:
+        image="data/{project}/{folder}/{filename}.{ext}",
+    wildcard_constraints:
         meta_project="[^/]*",
         project="[^/]*",
         folder=".*",
         filename="[^/.]*",
         ext="[^.]*",
-  output:
-    image="{meta_project}/{project}/{folder}/{filename}.{ext}",
-  shell:
-    """
+    output:
+        image="{meta_project}/{project}/{folder}/{filename}.{ext}",
+    shell:
+        """
     ln "{input.image}" "{output.image}"
     """
 
-# f"data/{wildcards.project}/{{folder,.*}}/{{filename,[^/.][^/]*}}.{{ext,[^.]+}}"
-
+# TODO make this into a function and call with shell
 rule process_image:
     wildcard_constraints:
         meta_project="[^/]*",
@@ -225,26 +226,30 @@ rule process_image:
         ext="[^.]*",
     input:
         cp="{meta_project}/{project}/{folder}/{filename}.{ext}",
-        filename = "data/{project}/{folder}/{filename}.{ext}",
+        filename="data/{project}/{folder}/{filename}.{ext}",
+        metadata=metadata_dir+"/{project}/file_list.yaml",
         # filename = "{meta_project}/{project}/{folder}/{filename}.{ext}"
     output:
-        json="{meta_project}/{project}/{folder}/{filename}.{ext}.metadata.json"
+        json="{meta_project}/{project}/{folder}/{filename}.{ext}.metadata.json",
+    params:
+        # metadata=lambda input, wildcards: load_yaml(f"metadata/{wildcards.project}/file_list.yaml"),
+        metadata=lambda wildcards, input: load_yaml(input.metadata),
     run:
-        # path = pathlib.Path(input.json)
-        # parent_dir = path.parent
-        # full_path = f"{wildcards.meta_project}/{wildcards.project}/{wildcards.folder}/{wildcards.filename}.{wildcards.ext}"
-
+        # breakpoint()
         # Check if the metadata key exists
-        metadata_key = metadata[wildcards.project].get("data", {}).get(wildcards.project+"/"+wildcards.folder, {})
+        metadata = params.metadata
+        metadata_key = params.metadata.get("data", {}).get(
+            wildcards.project + "/" + wildcards.folder, {}
+        )
         if not metadata_key:
             print(f"skip {wildcards.project}/{wildcards.folder}")
         else:
             # Check if 'source image' exists in metadata_key
-            if 'source image' in metadata_key:
-              if metadata_key["source image"] != "":
-                source_image = f"{wildcards.meta_project}/{wildcards.project}/{metadata_key['source image']}/{wildcards.filename}.{wildcards.ext}"
-                # breakpoint()
-                metadata_key["source image"] = source_image
+            if "source image" in metadata_key:
+                if metadata_key["source image"] != "":
+                    source_image = f"{wildcards.meta_project}/{wildcards.project}/{metadata_key['source image']}/{wildcards.filename}.{wildcards.ext}"
+                    # breakpoint()
+                    metadata_key["source image"] = source_image
 
         metadata_dict = metadata_key
 
