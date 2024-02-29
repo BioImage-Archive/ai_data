@@ -14,3 +14,4 @@ dependencies:
 - bioformats2raw
 - pip:
   - ome-zarr
+  - -e .
