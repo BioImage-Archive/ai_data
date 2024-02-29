@@ -7,6 +7,7 @@ authors = ["Craig <ctr26@ebi.ac.uk>"]
 [tool.poetry.dependencies]
 python = "^3.11"
 bia-agent = {git = "https://github.com/BioImage-Archive/bia-agent.git", rev = "main"}
+zeroc-ice = "^3.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

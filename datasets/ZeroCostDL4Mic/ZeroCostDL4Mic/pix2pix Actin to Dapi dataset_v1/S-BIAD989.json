@@ -22,8 +22,7 @@
     "type": "Study",
     "attributes": [
       {
-        "name": "Description",
-        "value": ""
+        "name": "Description"
       },
       {
         "name": "Keyword",
@@ -144,12 +143,10 @@
         "type": "Biosample",
         "attributes": [
           {
-            "name": "Title",
-            "value": ""
+            "name": "Title"
           },
           {
-            "name": "Biological entity",
-            "value": ""
+            "name": "Biological entity"
           },
           {
             "name": "Description"
@@ -209,8 +206,7 @@
                 "value": "Fluorescence microscopy"
               },
               {
-                "name": "Ontology Name",
-                "value": ""
+                "name": "Ontology Name"
               },
               {
                 "name": "Ontology Term ID",

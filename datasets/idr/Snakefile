@@ -5,8 +5,16 @@ from tqdm import tqdm
 import json 
 from scripts import idr_funs 
 from idr import connection
+import pandas as pd
+data_sizes = list(
+    map(
+        int,
+        [
+            1e5,
+        ],
+    )
+)
 
-data_sizes = list(map(int,[1e5,1e6,5e5]))
 
 def get_hcs():
     # breakpoint()
@@ -27,6 +35,39 @@ def get_hcs():
 
 screen_names = get_hcs()
 
+
+def get_images(wildcards):
+    image_ids = f"results/{wildcards.screen_id}/image_ids.json"
+    breakpoint()
+    checkpoint_output = checkpoints.get_image_metadata.get(**wildcards).output.metadata
+    with open(checkpoint_output) as f:
+        metadata = json.load(f)
+
+    return get_file_list()
+
+
+def get_file_list(metadata):
+    input_files = []
+    for image_id, zct in tqdm(metadata.items()):
+        z_values = range(zct["z"])
+        c_values = range(zct["c"])
+        t_values = range(zct["t"])
+        input_files.extend(
+            expand(
+                "results/{screen_id}/{image_id}/{z}_{c}_{t}.tiff",
+                screen_id=wildcards.screen_id,
+                image_id=image_id,
+                z=z_values,
+                c=c_values,
+                t=t_values,
+            )
+        )
+    return input_files
+
+
+# def get_subset_images()
+
+
 def expand_from_metadata(wildcards):
     # breakpoint()
     # checkpoint_output = checkpoints.get_hcs_screens.get(**wildcards).output.screen_names
@@ -37,11 +78,12 @@ def expand_from_metadata(wildcards):
     for image_id, zct in tqdm(metadata.items()):
         input_files.extend(
             expand(
-                "results/{{screen_name}}/{image_id}/{z}_{c}_{t}.ome.ngff",
+                "results/{{screen_name}}/{image_id}/{z}_{c}_{t}.{ext}",
                 image_id=image_id,
                 z=range(zct["z"]),
                 c=range(zct["c"]),
                 t=range(zct["t"]),
+                ext=["tiff"],
             )
         )
     return input_files
@@ -64,11 +106,48 @@ def get_organism_screenids(session, organism, idr_base_url="https://idr.openmicr
         screen_id_list.append(str(s["id"]))  
     return screen_id_list
 
+
+torch_files = ["metadata.json", "downloaded.flag"]
+
+
 rule all:
     input:
         "results/screen_names.json",
         "results/image_ids.json",
-        expand("results/{screen_name}/downloaded.flag",screen_name=screen_names)
+        "results/metadata.json",
+        expand("results/{data_size}/downloaded.flag",data_size=data_sizes)
+        # expand(
+        #     "results/{data_size}/{torch_file}",
+        #     data_size=data_sizes,
+        #     torch_file=torch_files,
+        # ),
+        # expand("results/{screen_name}/downloaded.flag", screen_name=screen_names),
+        # expand("results/{data_size}_image_ids.json", data_size=data_sizes),
+        # expand("results/{data_size}.done", data_size=data_sizes),
+
+def get_subset(wildcards):
+    checkpoint_output = checkpoints.get_metadata.get(**wildcards).output.image_ids
+    breakpoint()
+    df = pd.read_json(checkpoint_output)      
+
+    breakpoint()
+    data_size = wildcards.data_size
+    pass
+    # pd.DataFrame.
+
+
+
+
+rule download_subset:
+    input:
+        metadata="results/metadata.json",
+        images=get_subset,
+    output:
+        flag="results/{data_size}/downloaded.flag"
+    script:
+        "scripts/download_image.py"
+
+
 
 checkpoint get_hcs_screens:
     # input:
@@ -81,12 +160,30 @@ checkpoint get_hcs_screens:
         with open(output.screen_names, "w") as f:
             json.dump(screen_names, f)
 
-rule download_all_images_per_screen:
-  input:
-    metadata=expand_from_metadata
-  output:
-    flag=touch("results/{screen_name}/downloaded.flag")
-    
+
+# rule download_all_images_per_screen:
+#     input:
+#         metadata=expand_from_metadata,
+#     output:
+#         flag=touch("results/{screen_name}/downloaded.flag"),
+
+
+rule download_images:
+    input:
+        image_ids="results/{data_size}_image_ids.json",
+        images=get_images,
+        # tiff = "results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
+    output:
+        flag=touch("results/{data_size}.done"),
+
+
+rule download_image:
+    output:
+        image_id="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
+    script:
+        "scripts/download_image.py"
+
+
 rule collate_image_ids:
     input:
         screen_names="results/screen_names.json",
@@ -148,26 +245,42 @@ checkpoint get_image_metadata:
     script:
       "scripts/get_image_metadata.py"
 
-rule download_images:
-    resources:
-        mem_mb=1000,
+checkpoint get_metadata:
     input:
-        metadata="results/{screen_name}/metadata.json",
+        screen_name=expand(
+            "results/{screen_name}/metadata.json", screen_name=screen_names
+        ),
     output:
-        tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
-    script:
-        "scripts/download_images.py"
+        metadata="results/metadata.json",
+    shell:
+        "jq -s . {input.screen_name} > {output.metadata}"
 
-rule convert_tiff_to_ngff:
-  input:
-    tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
-  output:
-    ngff=directory("results/{screen_name}/{image_id}/{z}_{c}_{t}.ome.ngff"),
-  shell:
-    """
-      bioformats2raw {input.tiff} {output.ngff}
-    """
 
+# rule download_image:
+#     resources:
+#         mem_mb=1000,
+#     input:
+#         metadata="results/{screen_name}/metadata.json",
+#     output:
+#         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
+#     script:
+#         "scripts/download_images.py"
+# rule tiff2png:
+#     input:
+#         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
+#     output:
+#         png="results/{screen_name}/{image_id}/{z}_{c}_{t}.png",
+#     script:
+#         "scripts/image2png.py"
+# rule convert_tiff_to_ngff:
+#     input:
+#         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
+#     output:
+#         ngff=directory("results/{screen_name}/{image_id}/{z}_{c}_{t}.ome.ngff"),
+#     shell:
+#         """
+#         bioformats2raw {input.tiff} {output.ngff}
+#     """
 # def expand_from_metadata(wildcards):
 #     checkpoint_output = checkpoints.get_image_metadata.get(**wildcards).output.metadata
 #     with open(checkpoint_output) as f:

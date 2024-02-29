@@ -22,7 +22,7 @@ study:
     funding_statement: "Supported by grants from the Academy of Finland, the Sigrid Juselius Foundation, and Åbo Akademi University Research Foundation (CoE CellMech), and by strategic funding to Åbo Akademi University from Drug Discovery and Diagnostics."
   publications:
   - doi: "https://doi.org/10.5281/zenodo.3941889"
-    title: "UNSURE"
+    title: ""
     year: 2020
   links:
   - link_url: "https://zenodo.org/records/3941889"
@@ -32,27 +32,27 @@ study:
 biosamples:
   Biosample-1:
     description: "Paired microscopy images (fluorescence) for pix2pix tasks."
-    biological_entity: "UNSURE"
+    biological_entity: ""
     organism:
-      scientific_name: "UNSURE"
-      ncbi_taxon: "UNSURE"
+      scientific_name: ""
+      ncbi_taxon: ""
 specimens:
   Specimen-1:
-    description: "UNSURE"
-    sample_preparation: "UNSURE"
+    description: ""
+    sample_preparation: ""
 acquisitions:
   Image Acquisition-1:
-    imaging_instrument: "UNSURE"
-    image_acquisition_parameters: "UNSURE"
+    imaging_instrument: ""
+    image_acquisition_parameters: ""
     imaging_method:
       value: "Fluorescence microscopy"
       ontology_id: "http://edamontology.org/topic_3954"
       ontology_name: "EDAM"
-    description: "UNSURE"
+    description: ""
 annotations:
   Annotations:
-    annotation_overview: "UNSURE"
-    annotation_method: "UNSURE"
+    annotation_overview: ""
+    annotation_method: ""
 version:
   Annotations:
     version: "1.0.0"
@@ -61,7 +61,7 @@ version:
 study_component:
   Study Component-1:
     name: "Microscopy images (fluorescence)"
-    description: "UNSURE"
+    description: ""
     rembi_version: '1.5'
 associations:
   Study Component-1:

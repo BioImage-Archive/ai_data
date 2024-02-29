@@ -18,15 +18,56 @@ meta_project_name = "ZeroCostDL4Mic"
 # print(projects_metadata)
 metadata_files = ["metadata.tsv","file_list.tsv","annotations_list.tsv"]
 rule all:
+    wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
     input:
         "metadata.json",
         expand("{meta_project}/{project}/{metadata_files}",meta_project=meta_project_name,
         project=projects_metadata,
         metadata_files=metadata_files,
         ),
-        
- 
+        # expand("{project}/file_list.yaml",project=projects_metadata),
+        # Download_and_extract 
+        expand("data/{project}", project=projects_metadata),
+        expand(
+            "{meta_project}/{project}/pagetab.tsv",
+            meta_project=meta_project_name,
+            project=projects_metadata,
+        ),
+
+
+rule:
+    wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
+    input:
+        agent_config=metadata_dir + "/{project}/bia.yaml",
+        accession = metadata_dir + "/{project}/accession",
+    output:
+        pagetab="{meta_project}/{project}/pagetab.tsv",
+    params:
+        accession=lambda wildcards, input: pathlib.Path(input.accession).read_text(),
+    shell:
+        """
+        # touch "{output.pagetab}"
+        bia-agent rembi-to-pagetab "{input.agent_config}" > "{output.pagetab}" {params.accession}
+        """
+
+
 checkpoint download_and_extract:
+    wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
     input:
         metadata_json="metadata.json",
     output:
@@ -64,6 +105,12 @@ def get_jsons(wildcards):
 
 
 rule save_file_list:
+    wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
     output:
         json="{meta_project}/{project}/metadata_list.json",
     run:
@@ -100,6 +147,12 @@ def transform_row_to_dict(row):
     return transformed_dict
 
 checkpoint collate_json:
+    wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
     input:
         json=get_jsons,
     output:
