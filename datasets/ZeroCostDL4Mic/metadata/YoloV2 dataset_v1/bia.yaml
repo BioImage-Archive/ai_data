@@ -42,14 +42,14 @@ specimens:
   Specimen-1:
     description: ""
     sample_preparation: ""
-    acquisitions:
-  Image Acquisition-1:
-    sample_preparation: ""
-    imaging_method:
-      value: "Echography"
-      ontology_id: "http://edamontology.org/topic_3954"
-      ontology_name: "EDAM"
-    description: ""
+    acquisitions: ""
+Image Acquisition-1:
+  sample_preparation: ""
+  imaging_method:
+    value: "Echography"
+    ontology_id: "http://edamontology.org/topic_3954"
+    ontology_name: "EDAM"
+  description: ""
 annotations:
   Annotations:
     annotation_overview: ""
