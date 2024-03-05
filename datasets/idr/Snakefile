@@ -4,9 +4,10 @@ import os
 from tqdm import tqdm
 import json
 import yaml
-from scripts import idr_funs
+import idr_funs
 from idr import connection
 import pandas as pd
+
 data_sizes = list(
     map(
         int,
@@ -15,6 +16,9 @@ data_sizes = list(
         ],
     )
 )
+
+data_sizes = list(map(int, [1e5,]))
+
 
 data_sizes = list(map(int, [1e5,]))
 
@@ -92,9 +96,10 @@ def get_organism_screenids(
 rule all:
     input:
         "results/screen_names.json",
-        "results/image_ids.json",
-        expand("results/{screen_name}/downloaded.flag", screen_name=screen_names),
-        expand("results/{data_size}_image_ids.json", data_size=data_sizes),
+        # "results/image_ids.json",
+        "results/metadata.json",
+        # expand("results/{screen_name}/downloaded.flag", screen_name=screen_names),
+        # expand("results/{data_size}_image_ids.json", data_size=data_sizes),
 
 
 checkpoint get_hcs_screens:
@@ -109,11 +114,11 @@ checkpoint get_hcs_screens:
             json.dump(screen_names, f)
 
 
-rule download_all_images_per_screen:
-    input:
-        metadata=expand_from_metadata,
-    output:
-        flag=touch("results/{screen_name}/downloaded.flag"),
+# rule download_all_images_per_screen:
+#     input:
+#         metadata=expand_from_metadata,
+#     output:
+#         flag=touch("results/{screen_name}/downloaded.flag"),
 
 
 rule collate_image_ids:
@@ -191,24 +196,24 @@ checkpoint get_metadata:
         "jq -s . {input.screen_name} > {output.metadata}"
 
 
-rule tiff2png:
-    input:
-        tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
-    output:
-        png="results/{screen_name}/{image_id}/{z}_{c}_{t}.png",
-    script:
-        "scripts/image2png.py"
+# rule tiff2png:
+#     input:
+#         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
+#     output:
+#         png="results/{screen_name}/{image_id}/{z}_{c}_{t}.png",
+#     script:
+#         "scripts/image2png.py"
 
 
-rule convert_tiff_to_ngff:
-    input:
-        tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
-    output:
-        ngff=directory("results/{screen_name}/{image_id}/{z}_{c}_{t}.ome.ngff"),
-    shell:
-        """
-        bioformats2raw {input.tiff} {output.ngff}
-    """
+# rule convert_tiff_to_ngff:
+#     input:
+#         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
+#     output:
+#         ngff=directory("results/{screen_name}/{image_id}/{z}_{c}_{t}.ome.ngff"),
+#     shell:
+#         """
+#         bioformats2raw {input.tiff} {output.ngff}
+#     """
 
 
 # def expand_from_metadata(wildcards):
