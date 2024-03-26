@@ -187,8 +187,12 @@ checkpoint collate_json:
             dfs.append(df)
 
         final_df = pd.concat(dfs)
-
-        annotations_list_tsv = final_df[final_df["source image"] == ""]
+        # breakpoint()
+        # TODO tidy, sometimes the source image is not in the metadata and thats fine it shouldn't cause a crash though
+        try: 
+            annotations_list_tsv = final_df[final_df["source image"] == ""]
+        except:
+            annotations_list_tsv = pd.DataFrame()
         file_list_tsv = final_df.drop(annotations_list_tsv.index)
         mapper = {
             output.metadata_tsv: final_df,
@@ -244,6 +248,7 @@ rule process_image:
         if not metadata_key:
             print(f"skip {wildcards.project}/{wildcards.folder}")
         else:
+            # breakpoint()
             # Check if 'source image' exists in metadata_key
             if "source image" in metadata_key:
                 if metadata_key["source image"] != "":
