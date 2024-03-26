@@ -1,42 +1,49 @@
-
 study:
   title: "ZeroCostDL4Mic - YoloV2 example training and test dataset"
-  description: ""
+  description: "UNKNOWN"
   private_until_date: "2024-07-17"
   keywords:
-  - Deep learning
-  - Object detection
-  - Image segmentation
-  - Stardist
-  - Microscopy
+    - Deep learning
+    - Object detection
+    - Image segmentation
+    - Stardist
+    - Microscopy
   authors:
-  - first_name: Johanna
-    last_name: Jukkala
-    role: Submitter
-    affiliation:
-      name: ""
-  - first_name: Craig
-    last_name: Russell
-    role: Data Curator
-    affiliation:
-      name: ""
+    - first_name: Johanna
+      last_name: Jukkala
+      role: Submitter
+      email: "UNKNOWN"
+      affiliation:
+        name: ""
+    - first_name: Craig
+      last_name: Russell
+      role: Data Curator
+      email: "bioimagearchive@ebi.ac.uk"
+      affiliation:
+        name: ""
   funding:
     funding_statement: "Supported by the Academy of Finland, the Sigrid Juselius Foundation, Åbo Akademi University Research Foundation (CoE CellMech), and strategic funding to Åbo Akademi University from Drug Discovery and Diagnostics."
   publications:
-  - doi: "https://doi.org/10.5281/zenodo.3715492"
-    title: "ZeroCostDL4Mic: an open platform to use Deep-Learning in Microscopy"
-    year: 2020
+    - doi: "https://doi.org/10.5281/zenodo.3715492"
+      title: "ZeroCostDL4Mic: an open platform to use Deep-Learning in Microscopy"
+      year: 2020
+      authors:
+        - first_name: Johanna
+          last_name: Jukkala
+          role: Submitter
+          affiliation:
+            name: ""
   links:
-  - link_url: "https://zenodo.org/records/3941908"
-    link_description: "Original submission (not curated)"
+    - link_url: "https://zenodo.org/records/3941908"
+      link_description: "Original submission (not curated)"
   acknowledgements:
-  rembi_version: '1.5'
+  rembi_version: "1.5"
 biosamples:
   Biosample-1:
     description: "Paired microscopy images (fluorescence) and corresponding masks"
     biological_entity: "Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation"
     organism:
-      scientific_name: ""
+      scientific_name: "Unknown"
       ncbi_taxon: ""
 specimens:
   Specimen-1:
@@ -63,7 +70,7 @@ study_component:
   Study Component-1:
     name: "Paired microscopy images (fluorescence) and corresponding masks"
     description: ""
-    rembi_version: '1.5'
+    rembi_version: "1.5"
 associations:
   Study Component-1:
     biosample_id: "Biosample-1"

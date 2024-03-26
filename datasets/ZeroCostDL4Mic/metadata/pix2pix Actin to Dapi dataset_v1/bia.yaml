@@ -3,38 +3,40 @@ study:
   description: "A dataset for image-to-image translation tasks with paired microscopy images."
   private_until_date: "2024-07-17"
   keywords:
-  - Deep learning
-  - Image segmentation
-  - Stardist
-  - Microscopy
+    - Deep learning
+    - Image segmentation
+    - Stardist
+    - Microscopy
   authors:
-  - first_name: Johanna
-    last_name: Jukkala
-    role: Submitter
-    affiliation:
-      name: "1) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, 20520 Turku, Finland 2) Turku Bioscience Centre, University of Turku and Åbo Akademi University, FI-20520 Turku, Finland"
-  - first_name: Craig
-    last_name: Russell
-    role: Data Curator
-    affiliation:
-      name: "European Molecular Biology Laboratory, European Bioinformatics Institute"
+    - first_name: Johanna
+      last_name: Jukkala
+      email: "UNKNOWN"
+      role: Submitter
+      affiliation:
+        name: "1) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, 20520 Turku, Finland 2) Turku Bioscience Centre, University of Turku and Åbo Akademi University, FI-20520 Turku, Finland"
+    - first_name: Craig
+      last_name: Russell
+      email: "bioimagearchive@ebi.ac.uk"
+      role: Data Curator
+      affiliation:
+        name: "European Molecular Biology Laboratory, European Bioinformatics Institute"
   funding:
     funding_statement: "Supported by grants from the Academy of Finland, the Sigrid Juselius Foundation, and Åbo Akademi University Research Foundation (CoE CellMech), and by strategic funding to Åbo Akademi University from Drug Discovery and Diagnostics."
   publications:
-  - doi: "https://doi.org/10.5281/zenodo.3941889"
-    title: ""
-    year: 2020
+    - doi: "https://doi.org/10.5281/zenodo.3941889"
+      title: "UNKNOWNN"
+      year: 2020
   links:
-  - link_url: "https://zenodo.org/records/3941889"
-    link_description: "Original submission (not curated)"
+    - link_url: "https://zenodo.org/records/3941889"
+      link_description: "Original submission (not curated)"
   acknowledgements:
-  rembi_version: '1.5'
+  rembi_version: "1.5"
 biosamples:
   Biosample-1:
     description: "Paired microscopy images (fluorescence) for pix2pix tasks."
     biological_entity: ""
     organism:
-      scientific_name: ""
+      scientific_name: "Unknwon"
       ncbi_taxon: ""
 specimens:
   Specimen-1:
@@ -62,7 +64,7 @@ study_component:
   Study Component-1:
     name: "Microscopy images (fluorescence)"
     description: ""
-    rembi_version: '1.5'
+    rembi_version: "1.5"
 associations:
   Study Component-1:
     biosample_id: "Biosample-1"

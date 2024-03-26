@@ -12,8 +12,15 @@ study:
   - first_name: Guillaume
     last_name: Jacquemet
     role: Submitter
+    email: "UNKNOWN"
     affiliation:
       name: "1) Faculty of Science and Engineering, Cell Biology, Åbo Akademi University, 20520 Turku, Finland 2) Turku Bioscience Centre, University of Turku and Åbo Akademi University, FI-20520 Turku, Finland"
+  - first_name: Craig
+    last_name: Russell
+    email: "UNKNOWN"
+    role: Data Curator
+    affiliation:
+      name: "European Molecular Biology Laboratory, European Bioinformatics Institute"
   funding:
     funding_statement: "Supported by grants from the Academy of Finland, the Sigrid Juselius Foundation, and Åbo Akademi University Research Foundation (CoE CellMech), and by strategic funding to Åbo Akademi University from Drug Discovery and Diagnostics."
   publications:

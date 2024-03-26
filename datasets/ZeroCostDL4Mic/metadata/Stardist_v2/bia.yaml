@@ -3,31 +3,42 @@ study:
   description: "A dataset consisting of paired microscopy images (fluorescence) and corresponding masks. Microscopy data type: Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation."
   private_until_date: "2024-10-30"
   keywords:
-  - Deep learning
-  - Image segmentation
-  - Stardist
-  - Microscopy
+    - Deep learning
+    - Image segmentation
+    - Stardist
+    - Microscopy
   authors:
-  - first_name: Johanna
-    last_name: Jukkala
-    role: Submitter
-    affiliation:
-      name: ""
-  - first_name: Craig
-    last_name: Russell
-    role: Data Curator
-    affiliation:
-      name: ""
+    - first_name: Johanna
+      last_name: Jukkala
+      role: Submitter
+      email: "UNKNOWN"
+      affiliation:
+        name: ""
+    - first_name: Craig
+      last_name: Russell
+      role: Data Curator
+      email: "bioimagearchive@ebi.ac.uk"
+      affiliation:
+        name: "European Molecular Biology Laboratory, European Bioinformatics Institute"
   funding:
     funding_statement: "G.J. was supported by grants from the Academy of Finland, the Sigrid Juselius Foundation, and Åbo Akademi University Research Foundation (CoE CellMech), and by Drug Discovery and Diagnostics strategic funding to Åbo Akademi University."
   publications:
-  - title: "Unpublished"
-    year: 2020
+    - title: "ZeroCostDL4Mic: an open platform to use Deep-Learning in Microscopy"
+      doi: "https://doi.org/10.5281/zenodo.3715492"
+      year: 2020
+      authors:
+        - first_name: Johanna
+          last_name: Jukkala
+          role: Submitter
+          email: "UNKNOWN"
+          affiliation:
+            name: ""
+
   links:
-  - link_url: "https://doi.org/10.5281/zenodo.3715492"
-    link_description: "Original submission (not curated)"
+    - link_url: "https://doi.org/10.5281/zenodo.3715492"
+      link_description: "Original submission (not curated)"
   acknowledgements:
-  rembi_version: '1.5'
+  rembi_version: "1.5"
 biosamples:
   Biosample-1:
     description: "Paired microscopy images (fluorescence) and corresponding masks"
@@ -61,7 +72,7 @@ study_component:
   Study Component-1:
     name: "Paired microscopy images (fluorescence) and corresponding masks"
     description: ""
-    rembi_version: '1.5'
+    rembi_version: "1.5"
 associations:
   Study Component-1:
     biosample_id: "Biosample-1"
