@@ -27,6 +27,7 @@ study:
   - doi: "https://doi.org/10.1038/nprot.2017.107"
     title: "A guide to super-resolution fluorescence microscopy"
     year: 2017
+    authors: "UNKNOWN"
   links:
   - link_url: "https://zenodo.org/records/3713326"
     link_description: "Original submission"

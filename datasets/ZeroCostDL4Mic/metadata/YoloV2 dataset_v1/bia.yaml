@@ -27,12 +27,7 @@ study:
     - doi: "https://doi.org/10.5281/zenodo.3715492"
       title: "ZeroCostDL4Mic: an open platform to use Deep-Learning in Microscopy"
       year: 2020
-      authors:
-        - first_name: Johanna
-          last_name: Jukkala
-          role: Submitter
-          affiliation:
-            name: ""
+      authors: Johanna Jukkala
   links:
     - link_url: "https://zenodo.org/records/3941908"
       link_description: "Original submission (not curated)"
