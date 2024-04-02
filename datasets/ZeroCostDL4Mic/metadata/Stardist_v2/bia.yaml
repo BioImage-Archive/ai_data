@@ -1,7 +1,7 @@
 study:
   title: "ZeroCostDL4Mic - Stardist example training and test dataset"
   description: "A dataset consisting of paired microscopy images (fluorescence) and corresponding masks. Microscopy data type: Fluorescence microscopy (SiR-DNA) and masks obtained via manual segmentation."
-  private_until_date: "2024-10-30"
+  private_until_date: "2023-10-30"
   keywords:
     - Deep learning
     - Image segmentation

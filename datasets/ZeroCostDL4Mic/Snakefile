@@ -46,7 +46,7 @@ rule all:
         # Download_and_extract 
         expand("data/{project}", project=projects_metadata),
         expand(
-            "{meta_project}/{project}/pagetab.tsv",
+            "{meta_project}/_pagetab/{project}.tsv",
             meta_project=meta_project_name,
             project=projects_metadata,
         ),
@@ -69,6 +69,23 @@ rule:
     shell:
         """
         bia-agent rembi-to-pagetab "{input.agent_config}" > "{output.pagetab}" {params.accession}
+        """
+
+
+rule:
+    wildcard_constraints:
+        meta_project="[^/]*",
+        project="[^/]*",
+        folder=".*",
+        filename="[^/.]*",
+        ext="[^.]*",
+    output:
+        "{meta_project}/_pagetab/{project}.tsv"
+    input:
+        "{meta_project}/{project}/pagetab.tsv"
+    shell:
+        """
+        cp '{input}' '{output}'
         """
 
 
