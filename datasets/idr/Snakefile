@@ -7,6 +7,7 @@ import yaml
 import idr_funs
 from idr import connection
 import pandas as pd
+from dask.distributed import Client, LocalCluster
 
 data_sizes = list(
     map(
@@ -17,15 +18,19 @@ data_sizes = list(
     )
 )
 
-data_sizes = list(map(int, [1e5,]))
-
-
-data_sizes = list(map(int, [1e5,]))
+data_sizes = list(
+    map(
+        int,
+        [
+            1e5,
+        ],
+    )
+)
 
 
 def get_hcs():
     # breakpoint()
-    conn = connection("idr.openmicroscopy.org")
+    conn = connection("idr.openmicroscopy.org", verbose=0)
     screens = conn.getObjects("Screen")
     filtered_screens = []
     for screen in screens:
@@ -71,6 +76,97 @@ def expand_from_metadata(wildcards):
     return input_files
 
 
+def download_subset_images(wildcards):
+    checkpoint_output = checkpoints.reduce_image_set.get(**wildcards).output.subset
+
+    metadata_json = checkpoints.get_metadata.get(**wildcards).output.metadata
+
+    with open(checkpoint_output) as f:
+        image_ids = json.load(f)
+    with open(metadata_json) as f:
+        metadata = json.load(f)
+
+    conn = connection("idr.openmicroscopy.org", verbose=0)
+    input_files = []
+    for image_id in tqdm(metadata.items()):
+        zct = metadata[image_id]
+        input_files.extend(
+            expand(
+                "results/HCS{data_size}/{image_id}/{z}_{c}_{t}.{ext}",
+                image_id=image_id,
+                data_size=wildcards.data_size,
+                z=range(zct["z"]),
+                c=range(zct["c"]),
+                t=range(zct["t"]),
+                ext=["ome.ngff", "tiff", "png"],
+            )
+        )
+    conn.close()
+    conn._closeSession()
+    return input_files
+
+
+onstart:
+    cluster = LocalCluster(n_workers=32, scheduler_port=8786)
+    client = Client(cluster)
+    print(cluster)
+    print(client)
+
+
+onsuccess:
+    cluster.close()
+    client.close()
+
+
+onerror:
+    cluster.close()
+    client.close()
+
+
+rule all:
+    input:
+        "results/screen_names.json",
+        # "results/image_ids.json",
+        "results/metadata.json",
+        # expand("results/{screen_name}/downloaded.flag", screen_name=screen_names),
+        expand("results/HCS{data_size}_image_ids.json", data_size=data_sizes),
+        expand("results/HCS{data_size}.downloaded.flag", data_size=data_sizes),
+
+
+# rule download_subsets:
+#     input:
+#         download_subset_images,
+#     output:
+#         flag=touch("results/HCS{data_size}.downloaded.flag"),
+
+
+rule download_subsets_dask:
+    input:
+        metadata="results/metadata.json",
+        subset="results/HCS{data_size}_image_ids.json",
+    output:
+        flag=touch("results/HCS{data_size}.downloaded.flag"),
+    script:
+        "scripts/download_images_dask.py"
+
+
+# rule:
+#     input:
+#         image_ids="results/{data_size}_image_ids.json",
+#     output:
+#         metadata="results/{data_size}_metadata.json",
+#     run:
+#         conn = connection("idr.openmicroscopy.org", verbose=0)
+#         metadata = {}
+#         with open(input.image_ids) as f:
+#             image_ids = json.load(f)
+#         for image_id in tqdm(image_ids):
+#             zct = idr_funs.get_image_dimensions(conn,image_id)
+#             metadata[image_id] = zct
+
+
+#         with open(output.metadata, "w") as f:
+#             json.dump(zct, f)
 def expand_from_screens(wildcards):
     checkpoint_output = checkpoints.get_hcs_screens.get(**wildcards).output.screen_names
 
@@ -91,15 +187,6 @@ def get_organism_screenids(
     for s in sr.json()["screens"]:
         screen_id_list.append(str(s["id"]))
     return screen_id_list
-
-
-rule all:
-    input:
-        "results/screen_names.json",
-        # "results/image_ids.json",
-        "results/metadata.json",
-        # expand("results/{screen_name}/downloaded.flag", screen_name=screen_names),
-        # expand("results/{data_size}_image_ids.json", data_size=data_sizes),
 
 
 checkpoint get_hcs_screens:
@@ -135,7 +222,7 @@ rule reduce_image_set:
     input:
         image_ids="results/image_ids.json",
     output:
-        subset="results/{data_size}_image_ids.json",
+        subset="results/HCS{data_size}_image_ids.json",
     shell:
         "jq -n --argjson size {wildcards.data_size} '[inputs] | flatten | .[range(0; $size | tonumber)]' {input.image_ids} > {output.subset}"
 
@@ -145,26 +232,8 @@ rule generate_image_ids:
         image_ids=touch("results/{screen_name}/image_ids.json"),
     resources:
         mem_mb=16000,
-    run:
-        conn = connection("idr.openmicroscopy.org")
-        # image_ids = get_image_ids
-        screen = conn.getObject("Screen", attributes={"name": wildcards.screen_name})
-        # screens = conn.getObject('Screen', attributes={'name': wildcards.screen_name})
-        print("Getting plates")
-        plates = idr_funs.get_omero_children(screen)
-        print("Getting wells")
-        wells = idr_funs.get_children_from_list_of_objects(plates)
-        print("Getting imageids")
-        well_sampler = idr_funs.get_children_from_list_of_objects(wells)
-        # breakpoint()
-        # print("Getting plates")
-        image_ids = [x.image().id for x in well_sampler]
-        with open(output.image_ids, "w") as f:
-            json.dump(image_ids, f)
-            # with open(output.image_ids, "w") as f:
-            #     f.write("\n".join(str(x) for x in image_ids))
-        print("generate_image_ids: Done")
-        conn._closeSession()
+    script:
+        "scripts/generate_image_ids.py"
 
 
 def expand_wildcards_from_checkpoint(wildcards):
@@ -175,7 +244,7 @@ def expand_wildcards_from_checkpoint(wildcards):
     return image_ids
 
 
-checkpoint get_image_metadata:
+rule get_image_metadata:
     input:
         json="results/{screen_name}/image_ids.json",
         image_ids="results/{screen_name}/image_ids.json",
@@ -185,7 +254,7 @@ checkpoint get_image_metadata:
         "scripts/get_image_metadata.py"
 
 
-checkpoint get_metadata:
+rule get_metadata:
     input:
         screen_name=expand(
             "results/{screen_name}/metadata.json", screen_name=screen_names
@@ -196,6 +265,22 @@ checkpoint get_metadata:
         "jq -s . {input.screen_name} > {output.metadata}"
 
 
+# rule download_image:
+#     output:
+#         img="results/HCS{data_size}/{image_id}/{z}_{c}_{t}.tiff",
+#     resources:
+#         mem_mb=16000,
+#     run:
+#         conn = connection("idr.openmicroscopy.org", verbose=0)
+#         im = idr_funs.download_image(
+#             conn = conn,
+#             image_id=wildcards.image_id,
+#             output_file = output.img,
+#             z=wildcards.z,
+#             c=wildcards.c,
+#             t=wildcards.t,
+#         )
+#         conn._closeSession()
 # rule tiff2png:
 #     input:
 #         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
@@ -203,8 +288,6 @@ checkpoint get_metadata:
 #         png="results/{screen_name}/{image_id}/{z}_{c}_{t}.png",
 #     script:
 #         "scripts/image2png.py"
-
-
 # rule convert_tiff_to_ngff:
 #     input:
 #         tiff="results/{screen_name}/{image_id}/{z}_{c}_{t}.tiff",
@@ -214,8 +297,6 @@ checkpoint get_metadata:
 #         """
 #         bioformats2raw {input.tiff} {output.ngff}
 #     """
-
-
 # def expand_from_metadata(wildcards):
 #     checkpoint_output = checkpoints.get_image_metadata.get(**wildcards).output.metadata
 #     with open(checkpoint_output) as f:

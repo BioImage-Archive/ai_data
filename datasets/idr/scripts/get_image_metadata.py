@@ -77,6 +77,5 @@ def get_metadata_sm(snakemake):
         json.dump(metadata, f)
     print("get_image_metadata: Done")
 
-
 # if __name__ == "main":
 get_metadata_sm(snakemake)

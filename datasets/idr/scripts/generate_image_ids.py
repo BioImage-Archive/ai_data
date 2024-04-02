@@ -4,7 +4,6 @@ import os
 import json 
 import idr_funs 
 from idr import connection
-breakpoint()
 conn = connection("idr.openmicroscopy.org")
 # image_ids = get_image_ids
 screen = conn.getObject('Screen', attributes={'name': snakemake.wildcards.screen_name})
@@ -15,7 +14,6 @@ print("Getting wells")
 wells = idr_funs.get_children_from_list_of_objects(plates)
 print("Getting imageids")
 well_sampler = idr_funs.get_children_from_list_of_objects(wells)
-# breakpoint()
 # print("Getting plates")
 image_ids = [x.image().id for x in well_sampler]
 with open(snakemake.output.image_ids, "w") as f:

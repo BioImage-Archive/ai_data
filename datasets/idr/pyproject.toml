@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "datasets"
+name = "idr_funs"
 version = "0.1.1"
 description = ""
 authors = ["Craig <ctr26@ebi.ac.uk>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"
