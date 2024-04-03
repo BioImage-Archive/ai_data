@@ -50,9 +50,9 @@ def get_metadata_unconnected(image_id, screen_name):
 
 def get_all_metadata(screen_name, image_ids,conn):
     # breakpoint()
-    get_metadata_delayed = delayed(get_metadata_connected)
+    get_metadata_delayed = delayed(get_metadata_unconnected)
     # get_metadata_delayed = delayed(get_metadata_unconnected)
-    tasks = [get_metadata_delayed(image_id, screen_name, conn) for image_id in image_ids]
+    tasks = [get_metadata_delayed(image_id, screen_name) for image_id in image_ids]
 
     # Use ProgressBar with Dask to compute tasks in parallel and show progress
     client = Client("127.0.0.1:8786")
