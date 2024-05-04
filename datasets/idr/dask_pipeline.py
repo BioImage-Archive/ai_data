@@ -742,22 +742,19 @@ async def process():
         print("plate_ids")
         plate_ids = screen_ids.map(screen2plate)
         plate_ids = plate_ids.flatten()
-        with ProgressBar():
-            plate_ids = await client.compute(plate_ids, on_error='skip')
+        plate_ids = await client.compute(plate_ids, on_error='skip')
         plate_ids = db.from_sequence(plate_ids)
         
         print("well_ids")
         well_ids = plate_ids.map(plate2well)
         well_ids = well_ids.flatten()
-        with ProgressBar():
-            well_ids = await client.compute(well_ids, on_error='skip')
+        well_ids = await client.compute(well_ids, on_error='skip')
         well_ids = db.from_sequence(well_ids)
 
         print("ids")
         ids = well_ids.map(well2image)
         ids = ids.flatten()
-        with ProgressBar():
-            ids = await client.compute(ids, on_error='skip')
+        ids = await client.compute(ids, on_error='skip')
         ids = db.from_sequence()
         
         print("metadata")
