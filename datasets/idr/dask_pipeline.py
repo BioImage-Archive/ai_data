@@ -13,8 +13,8 @@ from dask.cache import Cache
 from distributed import progress
 from dask.diagnostics import ProgressBar
 
-cache = Cache(2e9)
-cache.register()
+# # cache = Cache(2e9)
+# cache.register()
 
 # from scripts.get_image_metadata
 # Import necessary modules
@@ -548,7 +548,7 @@ async def get_client():
     #     cluster.scale(8)
     # except:
     cluster = LocalCluster(
-        memory_limit="32GB", threads_per_worker=32, asynchronous=True
+        memory_limit="32GB", threads_per_worker=128, asynchronous=True
     )
     client = Client(cluster)
     return client
@@ -568,33 +568,45 @@ async def get_client():
 #     return dd.read_csv(file).iloc[:, 1].to_bag()
 
 
-@delayed
-def read_csv(x, file, col):
-    bag = db.from_sequence(x)
-    bag = x
-    # file = name + ".csv"
+# @delayed
+# def read_csv(x, file, col):
+#     bag = db.from_sequence(x)
+#     bag = x
+#     # file = name + ".csv"
 
-    if os.path.exists(file + "/"):
-        cache_bag = dd.read_csv(file + "/*")[col].to_bag()
-        diff = db.from_sequence(set(x) - set(cache_bag))
-        bag = diff
-        bag = list(set(x) - set(cache_bag))
-    return bag
-    return dd.read_csv(file).iloc[:, 1].to_bag()
+#     if os.path.exists(file + "/"):
+#         cache_bag = dd.read_csv(file + "/*")[col].to_bag()
+#         diff = db.from_sequence(set(x) - set(cache_bag))
+#         bag = diff
+#         bag = list(set(x) - set(cache_bag))
+#     return bag
+
+
+@delayed
+def read_csv(x, file):
+    return list(dd.read_csv(file).iloc[:, 1].to_bag())
+
+
+# @delayed
+# def write_csv(x, file):
+#     if x != []:
+#         # TODO Check logic
+#         bag = db.from_sequence(x)
+#         bag.to_dataframe().to_csv(file)
+
+#     return list(dd.read_csv(file + "/*")[file].to_bag())
+
+#     # bag = db.from_sequence(x)
+#     # bag.to_dataframe().to_csv(file)
+#     # return bag
 
 
 @delayed
 def write_csv(x, file):
+    bag = db.from_sequence(x)
     if x != []:
-        # TODO Check logic
-        bag = db.from_sequence(x)
-        bag.to_dataframe().to_csv(file)
-
-    return list(dd.read_csv(file + "/*")[file].to_bag())
-
-    # bag = db.from_sequence(x)
-    # bag.to_dataframe().to_csv(file)
-    # return bag
+        bag.to_dataframe().to_csv(file, single_file=True)
+    return x
 
 
 # async def cache(file, bag, client):
@@ -606,11 +618,14 @@ def write_csv(x, file):
 
 
 async def cache(file, bag, client):
-    # if os.path.isfile(file):
-    bag = read_csv(bag, file)
-    # if not os.path.isfile(file):
-    bag = write_csv(bag, file)
-    return await client.compute(bag)
+    if os.path.isfile(file):
+        print("Reading from cache")
+        x = read_csv(bag, file)
+    if not os.path.isfile(file):
+        print("Writing to cache")
+        x = write_csv(bag, file)
+    x = await client.compute(x, on_error="skip")
+    return db.from_sequence(x)
 
 
 async def a_write_csv(file, bag, client):
@@ -730,37 +745,34 @@ async def process():
     async with Client(cluster, asynchronous=True) as client:
         print(client)
         screens = await get_screens()
-        screens = await client.compute(screens, on_error='skip')
+        screens = await client.compute(screens, on_error="skip")
         screens = db.from_sequence(screens)
-        
+
         print("screens_ids")
         screen_ids = screens.map(screen2screen_id)
         screen_ids = screen_ids.flatten()
-        screen_ids = await client.compute(screen_ids, on_error='skip')
-        screen_ids = db.from_sequence(screen_ids)
-        
+        screen_ids = await cache("screen_ids.csv", screen_ids, client)
+
         print("plate_ids")
         plate_ids = screen_ids.map(screen2plate)
         plate_ids = plate_ids.flatten()
-        plate_ids = await client.compute(plate_ids, on_error='skip')
-        plate_ids = db.from_sequence(plate_ids)
+        plate_ids = await cache("plate_ids.csv", plate_ids, client)
         
         print("well_ids")
         well_ids = plate_ids.map(plate2well)
         well_ids = well_ids.flatten()
-        well_ids = await client.compute(well_ids, on_error='skip')
-        well_ids = db.from_sequence(well_ids)
+        well_ids = await cache("well_ids.csv", well_ids, client)
 
         print("ids")
         ids = well_ids.map(well2image)
         ids = ids.flatten()
-        ids = await client.compute(ids, on_error='skip')
-        ids = db.from_sequence()
-        
+        ids = await cache("ids.csv", ids, client)
+
         print("metadata")
         metadata = ids.map(image2metadata)
         metadata = metadata.flatten()
-        result = await client.compute(metadata, on_error='skip').result()
+        metadata = await cache("metadata.csv", metadata, client)
+        result = metadata
 
         # print(client)
         # screens = await get_screens()
