@@ -11,6 +11,7 @@ from dask_jobqueue import SLURMCluster
 from dask.distributed import LocalCluster
 from dask.cache import Cache
 from distributed import progress
+from dask.diagnostics import ProgressBar
 
 cache = Cache(2e9)
 cache.register()
@@ -641,7 +642,8 @@ def screen2plate(screen):
         db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
     else:
         x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return x
+    return db.from_sequence(x)
+
 
 def screen2screen_id(screen):
     col = "screen"
@@ -653,7 +655,7 @@ def screen2screen_id(screen):
         db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
     else:
         x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return x
+    return db.from_sequence(x)
 
 
 def plate2well(plate):
@@ -668,7 +670,7 @@ def plate2well(plate):
         db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
     else:
         x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return x
+    return db.from_sequence(x)
 
 
 def well2image(well):
@@ -681,7 +683,7 @@ def well2image(well):
         db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
     else:
         x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return x
+    return db.from_sequence(x)
 
 
 def image2metadata(image_id):
@@ -694,7 +696,7 @@ def image2metadata(image_id):
         db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
     else:
         x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return x
+    return db.from_sequence(x)
 
 
 # def cache2disk(fn):
@@ -714,13 +716,12 @@ async def process():
         cluster = SLURMCluster(
             memory="16GB", walltime="24:00:00", cores=1, asynchronous=True
         )
-        cluster.adapt(maximum_jobs=64)
-        # cluster.scale(64)
+        # cluster.adapt(maximum_jobs=64)
+        cluster.scale(64)
     else:
         cluster = LocalCluster(
             memory_limit="32GB", threads_per_worker=64, asynchronous=True
         )
-    # client = Client(cluster)
     print(cluster)
     # The logic should be that the read_csv culling needs to happen before the mapping operations.
     # This means the CSVs need the screen_name and the screen_id
@@ -729,28 +730,40 @@ async def process():
     async with Client(cluster, asynchronous=True) as client:
         print(client)
         screens = await get_screens()
-        screens = client.persist(screens)
+        screens = await client.compute(screens, on_error='skip')
+        screens = db.from_sequence(screens)
+        
         print("screens_ids")
         screen_ids = screens.map(screen2screen_id)
         screen_ids = screen_ids.flatten()
-        screen_ids = client.persist(screen_ids)
+        screen_ids = await client.compute(screen_ids, on_error='skip')
+        screen_ids = db.from_sequence(screen_ids)
+        
         print("plate_ids")
         plate_ids = screen_ids.map(screen2plate)
         plate_ids = plate_ids.flatten()
-        plate_ids = client.persist(plate_ids)
+        with ProgressBar():
+            plate_ids = await client.compute(plate_ids, on_error='skip')
+        plate_ids = db.from_sequence(plate_ids)
+        
         print("well_ids")
         well_ids = plate_ids.map(plate2well)
         well_ids = well_ids.flatten()
-        well_ids = client.persist(well_ids)
+        with ProgressBar():
+            well_ids = await client.compute(well_ids, on_error='skip')
+        well_ids = db.from_sequence(well_ids)
+
         print("ids")
         ids = well_ids.map(well2image)
         ids = ids.flatten()
-        ids = client.persist(ids)
+        with ProgressBar():
+            ids = await client.compute(ids, on_error='skip')
+        ids = db.from_sequence()
+        
         print("metadata")
         metadata = ids.map(image2metadata)
         metadata = metadata.flatten()
-        metadata = client.persist(metadata)
-        result = await client.compute(metadata).result()
+        result = await client.compute(metadata, on_error='skip').result()
 
         # print(client)
         # screens = await get_screens()
