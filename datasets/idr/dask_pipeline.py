@@ -648,7 +648,7 @@ async def a_read_csv(file, col, bag, client):
 
 def screen2plate(screen):
     col = "screen_id"
-    folder = "plate.csv"
+    folder = "plate.csvs"
     filename = f"{folder}/{screen}.csv"
 
     if not os.path.isfile(filename):
@@ -662,7 +662,7 @@ def screen2plate(screen):
 
 def screen2screen_id(screen):
     col = "screen"
-    folder = "screen_id.csv"
+    folder = "screen_id.csvs"
     filename = f"{folder}/{screen}.csv"
 
     if not os.path.isfile(filename):
@@ -676,7 +676,7 @@ def screen2screen_id(screen):
 def plate2well(plate):
 
     col = "plate_id"
-    folder = "well.csv"
+    folder = "well.csvs"
     filename = f"{folder}/{plate}.csv"
 
     if not os.path.isfile(filename):
@@ -690,7 +690,7 @@ def plate2well(plate):
 
 def well2image(well):
     col = "well_id"
-    folder = "image.csv"
+    folder = "image.csvs"
     filename = f"{folder}/{well}.csv"
 
     if not os.path.isfile(filename):
@@ -703,7 +703,7 @@ def well2image(well):
 
 def image2metadata(image_id):
     col = "image_id"
-    folder = "metadata.csv"
+    folder = "metadata.csvs"
     filename = f"{folder}/{image_id}.csv"
 
     if not os.path.isfile(filename):
