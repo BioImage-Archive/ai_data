@@ -27,8 +27,9 @@ def get_metadata_connected(image_id,screen_name,conn):
     z = image.getSizeZ()
     c = image.getSizeC()
     t = image.getSizeT()
-    image_id = int(image_id)
+    # image_id = int(image_id)
     metadata = {
+        # "image_id": image_id,
         "screen_id": screen_name,
         "z": z,
         "c": c,
