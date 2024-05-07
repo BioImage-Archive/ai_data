@@ -607,7 +607,7 @@ def write_csv(x, file):
     bag = db.from_sequence(x)
     if x != []:
         print("Writing to cache")
-        bag.to_dataframe().to_csv(file, single_file=True)
+        bag.repartition(1).to_dataframe().to_csv(file, single_file=True)
     return x
 
 
@@ -627,7 +627,7 @@ async def cache(file, bag, client):
         print(f"Processing {file}")
         x = delayed(write_csv)(bag,file)
     x = client.persist(x)
-    progress(x)
+    # progress(x)
     x = await client.compute(x, on_error="skip")
     return db.from_sequence(x)
 
