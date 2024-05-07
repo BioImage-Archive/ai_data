@@ -13,6 +13,8 @@ from dask.cache import Cache
 from distributed import progress
 from dask.diagnostics import ProgressBar
 
+from functools import partial
+
 # # cache = Cache(2e9)
 # cache.register()
 
@@ -257,8 +259,6 @@ def screen_to_id(screen_name, field=None):
     else:
         return None
 
-
-from functools import partial
 
 
 def dynamically_repartition(df, func, field=None):
@@ -606,6 +606,7 @@ def read_csv(filename):
 def write_csv(x, file):
     bag = db.from_sequence(x)
     if x != []:
+        print("Writing to cache")
         bag.to_dataframe().to_csv(file, single_file=True)
     return x
 
@@ -623,8 +624,10 @@ async def cache(file, bag, client):
         print("Reading from cache")
         x = delayed(read_csv)(file)
     if not os.path.isfile(file):
-        print("Writing to cache")
+        print(f"Processing {file}")
         x = delayed(write_csv)(bag,file)
+    x = client.persist(x)
+    progress(x)
     x = await client.compute(x, on_error="skip")
     return db.from_sequence(x)
 
@@ -647,104 +650,157 @@ async def a_read_csv(file, col, bag, client):
 #     return [{index: x} for x in var]
 
 
+# def screen2plate(screen):
+#     col = "screen_id"
+#     folder = "cache/plate.csvs"
+#     filename = f"{folder}/{screen}.csv"
+
+#     if not os.path.isfile(filename):
+#         x = idr_funs.get_omero_children_id(screen, field="Screen")
+#         db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+#     else:
+#         x = read_csv(filename)
+#         # x = pd.read_csv(filename).iloc[:,1].to_list()
+#         # x = dd.read_csv(filename).repartition(1).iloc[:, 1].to_bag().compute()
+#     return x
+
+
+# def screen2screen_id(screen):
+#     col = "screen"
+#     folder = "cache/screen_id.csvs"
+#     filename = f"{folder}/{screen}.csv"
+
+#     if not os.path.isfile(filename):
+#         try:
+#             x = [screen_to_id(screen)]
+#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+#         except:
+#             x = [None]
+#     else:
+#         x = read_csv(filename)
+#         # x = pd.read_csv(filename).iloc[:,1].to_list()
+#     return x 
+
+
+# def plate2well(plate):
+
+#     col = "plate_id"
+#     folder = "cache/well.csvs"
+#     filename = f"{folder}/{plate}.csv"
+
+#     if not os.path.isfile(filename):
+#         try:
+#             x = idr_funs.get_omero_children_id(plate, field="Plate")
+#             # pd.DataFrame({col:x}).to_csv(filename)
+#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+#         except:
+#             x = [None]
+#     else:
+#         x = read_csv(filename)
+#         # x = pd.read_csv(filename).iloc[:,1].to_list()
+#     return x
+
+
+# def well2image(well):
+#     col = "well_id"
+#     folder = "cache/image.csvs"
+#     filename = f"{folder}/{well}.csv"
+
+#     if not os.path.isfile(filename):
+#         try:
+#             x = well_id_to_image_ids(well)
+#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+#         except:
+#             x = [None]
+#     else:
+#         x = read_csv(filename)
+#         # x = pd.read_csv(filename).iloc[:,1].to_list()
+#     return x
+
+
+# def image2metadata(image_id):
+#     col = "image_id"
+#     folder = "cache/metadata.csvs"
+#     filename = f"{folder}/{image_id}.csv"
+
+#     if not os.path.isfile(filename):
+#         try:
+#             x = [get_metadata(image_id)]
+#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+#         except:
+#             x = [None]
+#     else:
+#         x = read_csv(filename)
+#         # x = pd.read_csv(filename).iloc[:,1].to_list()
+#     return x
+
+
+# # def cache2disk(fn):
+# #     @wraps(fn)
+# #     def inner(*args, **kwargs):
+# #         if os.path.isfile(id):
+# #             return dd.read_csv(id).to_bag().compute()
+# #         else:
+# #             return fn(*args, **kwargs)
+
+# #     return inner
+
+
+from functools import wraps
+
+def cache_to_disk(folder):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            filename = f"{folder}/{args[0]}.csv"
+            
+            if not os.path.isfile(filename):
+                try:
+                    # Attempt to execute the function and save the result
+                    result = func(*args, **kwargs)
+                    db.from_sequence(result).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+                    # pd.DataFrame(result).to_csv(filename, index=False)
+                except Exception as e:
+                    # Handle exceptions by logging or other means
+                    print(f"An error occurred: {e}")
+                    result = [None]  # Ensure consistent return type
+                return result
+            else:
+                try:
+                    # Attempt to read the cached file
+                    return pd.read_csv(filename).iloc[:,1].to_list()
+                except Exception as e:
+                    # Handle file read errors
+                    print(f"Error reading the file: {e}")
+                    return [None]  # Return a default value if reading fails
+        
+        return wrapper
+    return decorator
+
+# Applying the updated decorator
+@cache_to_disk("cache/plate.csvs")
 def screen2plate(screen):
-    col = "screen_id"
-    folder = "cache/plate.csvs"
-    filename = f"{folder}/{screen}.csv"
-
-    if not os.path.isfile(filename):
-        x = idr_funs.get_omero_children_id(screen, field="Screen")
-        db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-    else:
-        x = read_csv(filename)
-        # x = pd.read_csv(filename).iloc[:,1].to_list()
-        # x = dd.read_csv(filename).repartition(1).iloc[:, 1].to_bag().compute()
-    return x
+    return idr_funs.get_omero_children_id(screen, field="Screen")
 
 
+@cache_to_disk("cache/screen_id.csvs")
 def screen2screen_id(screen):
-    col = "screen"
-    folder = "cache/screen_id.csvs"
-    filename = f"{folder}/{screen}.csv"
+    return [screen_to_id(screen)]
 
-    if not os.path.isfile(filename):
-        try:
-            x = [screen_to_id(screen)]
-            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-        except:
-            x = [None]
-    else:
-        x = read_csv(filename)
-        # x = pd.read_csv(filename).iloc[:,1].to_list()
-    return x 
-
-
+@cache_to_disk("cache/well.csvs")
 def plate2well(plate):
+    return idr_funs.get_omero_children_id(plate, field="Plate")
 
-    col = "plate_id"
-    folder = "cache/well.csvs"
-    filename = f"{folder}/{plate}.csv"
-
-    if not os.path.isfile(filename):
-        try:
-            x = idr_funs.get_omero_children_id(plate, field="Plate")
-            # pd.DataFrame({col:x}).to_csv(filename)
-            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-        except:
-            x = [None]
-    else:
-        x = read_csv(filename)
-        # x = pd.read_csv(filename).iloc[:,1].to_list()
-    return x
-
-
+@cache_to_disk("cache/image.csvs")
 def well2image(well):
-    col = "well_id"
-    folder = "cache/image.csvs"
-    filename = f"{folder}/{well}.csv"
+    return well_id_to_image_ids(well)
 
-    if not os.path.isfile(filename):
-        try:
-            x = well_id_to_image_ids(well)
-            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-        except:
-            x = [None]
-    else:
-        x = read_csv(filename)
-        # x = pd.read_csv(filename).iloc[:,1].to_list()
-    return x
-
-
+@cache_to_disk("cache/metadata.csvs")
 def image2metadata(image_id):
-    col = "image_id"
-    folder = "cache/metadata.csvs"
-    filename = f"{folder}/{image_id}.csv"
-
-    if not os.path.isfile(filename):
-        try:
-            x = [get_metadata(image_id)]
-            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-        except:
-            x = [None]
-    else:
-        x = read_csv(filename)
-        # x = pd.read_csv(filename).iloc[:,1].to_list()
-    return x
-
-
-# def cache2disk(fn):
-#     @wraps(fn)
-#     def inner(*args, **kwargs):
-#         if os.path.isfile(id):
-#             return dd.read_csv(id).to_bag().compute()
-#         else:
-#             return fn(*args, **kwargs)
-
-#     return inner
+    return [get_metadata(image_id)]
 
 
 async def process():
-
     if "SLURM_JOB_ID" in os.environ:
         cluster = SLURMCluster(
             memory="16GB", walltime="24:00:00", cores=32, asynchronous=True
@@ -769,7 +825,6 @@ async def process():
         print("screens_ids")
         screen_ids = screens.map(screen2screen_id)
         screen_ids = screen_ids.flatten()
-        # print(await client.compute(screen_ids).result())
         screen_ids = await cache("cache/screen_ids.csv", screen_ids, client)
 
         print("plate_ids")
