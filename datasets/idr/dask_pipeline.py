@@ -582,9 +582,10 @@ async def get_client():
 #     return bag
 
 
-@delayed
-def read_csv(x, file):
-    return list(dd.read_csv(file).iloc[:, 1].to_bag())
+# @delayed
+def read_csv(filename):
+    return pd.read_csv(filename).iloc[:,1].to_list()
+    return list(dd.read_csv(filename).iloc[:, 1].to_bag())
 
 
 # @delayed
@@ -601,7 +602,7 @@ def read_csv(x, file):
 #     # return bag
 
 
-@delayed
+
 def write_csv(x, file):
     bag = db.from_sequence(x)
     if x != []:
@@ -620,10 +621,10 @@ def write_csv(x, file):
 async def cache(file, bag, client):
     if os.path.isfile(file):
         print("Reading from cache")
-        x = read_csv(bag, file)
+        x = delayed(read_csv)(file)
     if not os.path.isfile(file):
         print("Writing to cache")
-        x = write_csv(bag, file)
+        x = delayed(write_csv)(bag,file)
     x = await client.compute(x, on_error="skip")
     return db.from_sequence(x)
 
@@ -648,70 +649,87 @@ async def a_read_csv(file, col, bag, client):
 
 def screen2plate(screen):
     col = "screen_id"
-    folder = "plate.csvs"
+    folder = "cache/plate.csvs"
     filename = f"{folder}/{screen}.csv"
 
     if not os.path.isfile(filename):
         x = idr_funs.get_omero_children_id(screen, field="Screen")
-        # pd.DataFrame({col:x}).to_csv(filename)
-        db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
+        db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
     else:
-        x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return db.from_sequence(x)
+        x = read_csv(filename)
+        # x = pd.read_csv(filename).iloc[:,1].to_list()
+        # x = dd.read_csv(filename).repartition(1).iloc[:, 1].to_bag().compute()
+    return x
 
 
 def screen2screen_id(screen):
     col = "screen"
-    folder = "screen_id.csvs"
+    folder = "cache/screen_id.csvs"
     filename = f"{folder}/{screen}.csv"
 
     if not os.path.isfile(filename):
-        x = [screen_to_id(screen)]
-        db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
+        try:
+            x = [screen_to_id(screen)]
+            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+        except:
+            x = [None]
     else:
-        x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return db.from_sequence(x)
+        x = read_csv(filename)
+        # x = pd.read_csv(filename).iloc[:,1].to_list()
+    return x 
 
 
 def plate2well(plate):
 
     col = "plate_id"
-    folder = "well.csvs"
+    folder = "cache/well.csvs"
     filename = f"{folder}/{plate}.csv"
 
     if not os.path.isfile(filename):
-        x = idr_funs.get_omero_children_id(plate, field="Plate")
-        # pd.DataFrame({col:x}).to_csv(filename)
-        db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
+        try:
+            x = idr_funs.get_omero_children_id(plate, field="Plate")
+            # pd.DataFrame({col:x}).to_csv(filename)
+            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+        except:
+            x = [None]
     else:
-        x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return db.from_sequence(x)
+        x = read_csv(filename)
+        # x = pd.read_csv(filename).iloc[:,1].to_list()
+    return x
 
 
 def well2image(well):
     col = "well_id"
-    folder = "image.csvs"
+    folder = "cache/image.csvs"
     filename = f"{folder}/{well}.csv"
 
     if not os.path.isfile(filename):
-        x = well_id_to_image_ids(well)
-        db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
+        try:
+            x = well_id_to_image_ids(well)
+            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+        except:
+            x = [None]
     else:
-        x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return db.from_sequence(x)
+        x = read_csv(filename)
+        # x = pd.read_csv(filename).iloc[:,1].to_list()
+    return x
 
 
 def image2metadata(image_id):
     col = "image_id"
-    folder = "metadata.csvs"
+    folder = "cache/metadata.csvs"
     filename = f"{folder}/{image_id}.csv"
 
     if not os.path.isfile(filename):
-        x = [get_metadata(image_id)]
-        db.from_sequence(x).to_dataframe().to_csv(filename, single_file=True)
+        try:
+            x = [get_metadata(image_id)]
+            db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+        except:
+            x = [None]
     else:
-        x = dd.read_csv(filename).iloc[:, 1].to_bag().compute()
-    return db.from_sequence(x)
+        x = read_csv(filename)
+        # x = pd.read_csv(filename).iloc[:,1].to_list()
+    return x
 
 
 # def cache2disk(fn):
@@ -729,13 +747,13 @@ async def process():
 
     if "SLURM_JOB_ID" in os.environ:
         cluster = SLURMCluster(
-            memory="16GB", walltime="24:00:00", cores=1, asynchronous=True
+            memory="16GB", walltime="24:00:00", cores=32, asynchronous=True
         )
         # cluster.adapt(maximum_jobs=64)
         cluster.scale(64)
     else:
         cluster = LocalCluster(
-            memory_limit="32GB", threads_per_worker=64, asynchronous=True
+            memory_limit="32GB", threads_per_worker=128, asynchronous=True
         )
     print(cluster)
     # The logic should be that the read_csv culling needs to happen before the mapping operations.
@@ -751,27 +769,28 @@ async def process():
         print("screens_ids")
         screen_ids = screens.map(screen2screen_id)
         screen_ids = screen_ids.flatten()
-        screen_ids = await cache("screen_ids.csv", screen_ids, client)
+        # print(await client.compute(screen_ids).result())
+        screen_ids = await cache("cache/screen_ids.csv", screen_ids, client)
 
         print("plate_ids")
         plate_ids = screen_ids.map(screen2plate)
         plate_ids = plate_ids.flatten()
-        plate_ids = await cache("plate_ids.csv", plate_ids, client)
-        
+        plate_ids = await cache("cache/plate_ids.csv", plate_ids, client)
+
         print("well_ids")
         well_ids = plate_ids.map(plate2well)
         well_ids = well_ids.flatten()
-        well_ids = await cache("well_ids.csv", well_ids, client)
+        well_ids = await cache("cache/well_ids.csv", well_ids, client)
 
         print("ids")
         ids = well_ids.map(well2image)
         ids = ids.flatten()
-        ids = await cache("ids.csv", ids, client)
+        ids = await cache("cache/ids.csv", ids, client)
 
         print("metadata")
         metadata = ids.map(image2metadata)
         metadata = metadata.flatten()
-        metadata = await cache("metadata.csv", metadata, client)
+        metadata = await cache("cache/metadata.csv", metadata, client)
         result = metadata
 
         # print(client)
