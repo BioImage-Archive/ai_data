@@ -12,14 +12,12 @@ from dask.distributed import LocalCluster
 from dask.cache import Cache
 from distributed import progress
 from dask.diagnostics import ProgressBar
-
+import time 
+from functools import wraps
 from functools import partial
 
-# # cache = Cache(2e9)
-# cache.register()
+from dask import compute
 
-# from scripts.get_image_metadata
-# Import necessary modules
 import omero
 import os
 import json
@@ -89,6 +87,7 @@ def download_image_cached(image_id, z, c, t, path, *args, **kwargs):
 
 
 def get_image_ids_from_screen(screen_name):
+    from idr import connection
     conn = connection("idr.openmicroscopy.org", verbose=-1)
     image_ids = get_image_ids_from_screen_unconnected(screen_name, conn)
     conn._closeSession()
@@ -141,9 +140,6 @@ def well_id_to_image_ids_unconnected(well_id, conn):
     return image_ids
 
 
-from dask import compute
-
-
 def get_image_ids_from_screen_dask_unconnected(screen_name, conn):
     screen = conn.getObject("Screen", attributes={"name": screen_name})
     screen_id = db.from_sequence([screen.getId()])
@@ -152,9 +148,6 @@ def get_image_ids_from_screen_dask_unconnected(screen_name, conn):
     wells_ids = plate_ids.map(idr_funs.get_omero_children_id, field="Plate").flatten()
     image_ids = db.from_delayed(wells_ids).map(well_id_to_image_ids)
     return image_ids
-
-
-# def get_screen_ids(scree_name):
 
 
 def get_image_ids_from_screen_dask_unconnected_bag(screen_name, conn):
@@ -168,6 +161,7 @@ def get_image_ids_from_screen_dask_unconnected_bag(screen_name, conn):
 
 
 def get_hcs():
+    # return ["idr0001-graml-sysgro/screenA", "idr0002-heriche-condensation/screenA"]
     conn = connection("idr.openmicroscopy.org", verbose=0)
     filtered_screens = get_hcs_unconnected(conn)
     conn.close()
@@ -278,15 +272,6 @@ def dynamic_repartion(bag):
     return bag
 
 
-# def cache_bag(bag, file):
-#     try:
-#         df = dd.read_csv(file)
-#         return df.to_bag()
-#     except:
-#         # df = bag.to_dataframe()
-#         # df.to_csv(file)
-#         return bag
-
 
 def populate_csv_dask(csv="hcs.csv"):
     # try:
@@ -328,21 +313,14 @@ def populate_csv_dask(csv="hcs.csv"):
     metadata = dynamically_repartition(ids, get_metadata)
     metadata.to_dataframe().to_csv("metadata.csv")
 
-    # with dask.config.set(scheduler="sync", delayed_optimize=__cached__):
-    # full = client.persist(metadata)
-    # progress(full)
+
 
     df = metadata.to_dataframe(meta=meta)
-    # df = client.persist(df)
-    # progress(df)
-    # df.to_csv(csv, index=False,).compute()
-    # progress(df.to_csv(csv, index=False))
-    # return df
+
 
 
 def process():
     df = populate_csv_dask()
-    # sub_df = df.iloc[0:1000]
     for row in df:
         path = f"{data_dir}/{row.image_id}_t-{row.t}_c-{row.c}_z-{row.z}"
         try:
@@ -351,9 +329,6 @@ def process():
         except:
             print(f"Failed on {row.image_id}")
 
-
-# async def get_hcs():
-#     return ["a"]
 
 
 @delayed(pure=True)
@@ -374,19 +349,12 @@ def bag_to_df(bag, path):
 
 @delayed()
 def cache_bag(file):
-    # try:
-    #     assert os.path.isfile(file)
+
     print(f"Caching from {file}")
     df = dd.read_csv(file).iloc[:, 1]
     df = df.repartition(npartitions=1)
     x = df.to_bag().compute()
-    # return x
-    # x = df.to_dask_array(lengths=True)
-    # print(f"Success")
-    # except:
-    # bag = db.from_sequence(x)
-    # bag.to_dataframe().to_csv(file, single_file=True)
-    # print(f"Caching to {file}")
+
     return x
 
 
@@ -398,18 +366,14 @@ def save_bag(x, file):
     return x
 
 
-async def get_screens():
+def get_screens():
     filtered_screens = delayed(get_hcs)()
-
     screens = db.from_delayed(filtered_screens)
-    # screens = await client.compute(screens)
     return screens
 
 
 async def get_screen_ids(screens):
-    # screens = db.from_sequence(screens)
     screen_ids = screens.map(screen_to_id)
-    # screen_ids = await client.compute(screen_ids)
     return screen_ids
 
 
@@ -417,7 +381,6 @@ async def get_plate_ids(screen_ids):
     screen_ids = db.from_sequence(screen_ids)
     plate_ids = screen_ids.map(idr_funs.get_omero_children_id, field="Screen")
     plate_ids = plate_ids.flatten()
-    # plate_ids = await client.compute(plate_ids)
     return plate_ids
 
 
@@ -425,7 +388,6 @@ async def get_well_ids(plate_ids):
     plate_ids = db.from_sequence(plate_ids)
     well_ids = plate_ids.map(idr_funs.get_omero_children_id, field="Plate")
     well_ids = well_ids.flatten()
-    # well_ids = await client.compute(well_ids)
     return well_ids
 
 
@@ -433,193 +395,35 @@ async def image_ids(well_ids):
     well_ids = db.from_sequence(well_ids)
     ids = well_ids.map(well_id_to_image_ids)
     ids = ids.flatten()
-    # ids = await client.compute(ids)
     return ids
 
 
 async def metadata(ids):
     ids = db.from_sequence(ids)
     metadata = ids.map(get_metadata)
-    # metadata = await client.compute(metadata)
     return metadata
 
-
-# async def a_process(cluster):
-#     # print("OK")
-#     print(cluster)
-#     async with Client(cluster, asynchronous=True) as client:
-#         # with client
-#         print(client)
-#         filtered_screens = delayed(get_hcs)()
-#         # filtered_screens = delayed(lambda: [1, 2, 3])()
-#         print("Screens")
-
-#         screens = db.from_delayed(filtered_screens)
-#         screens = await client.persist(screens)
-
-#         # if os.path.isfile("screens.csv"):
-#         #     screens = cache_bag("screens.csv")
-#         # else:
-#         # save_bag(screens, "screens.csv")
-
-#         # screens = await client.compute(screens)
-#         # screens = db.from_sequence(screens)
-
-#         screen_ids = screens.map(screen_to_id)
-#         print("screen_ids")
-#         screen_ids = await client.persist(screen_ids)
-#         # progress(screen_ids)
-#         # screen_ids = screen_ids.repartition(1)
-#         # if os.path.isfile("screen_ids.csv"):
-#         #     screen_ids = cache_bag("screen_ids.csv")
-#         # else:
-#         # screen_ids = save_bag(screen_ids, "screen_ids.csv")
-
-#         # screen_ids = await client.compute(screen_ids)
-#         # screen_ids = db.from_sequence(screen_ids)
-
-#         print("plate_ids")
-#         plate_ids = screen_ids.map(idr_funs.get_omero_children_id, field="Screen")
-#         # plate_ids = plate_ids.repartition(1)
-#         plate_ids = plate_ids.flatten()
-#         plate_ids = await client.persist(plate_ids)
-#         # progress(plate_ids)
-#         # if os.path.isfile("plate_ids.csv"):
-#         #     plate_ids = cache_bag("plate_ids.csv")
-#         # else:
-#         # plate_ids = save_bag(plate_ids, "plate_ids.csv")
-#         # plate_ids = await client.compute(plate_ids)
-#         # plate_ids = db.from_sequence(plate_ids)
-
-#         print("well_ids")
-#         well_ids = plate_ids.map(idr_funs.get_omero_children_id, field="Plate")
-#         well_ids = well_ids.flatten()
-#         well_ids = client.persist(well_ids)
-#         # progress(well_ids)
-
-#         # if os.path.isfile("well_ids.csv"):
-#         #     well_ids = cache_bag("well_ids.csv")
-#         # else:
-#         # save_bag(well_ids, "well_ids.csv")
-#         #     # cache = well_ids
-
-#         # well_ids = await client.compute(well_ids)
-#         # well_ids = db.from_sequence(well_ids)
-#         print("image_ids")
-#         ids = well_ids.map(well_id_to_image_ids)
-#         # ids = ids.repartition(1)
-#         ids = ids.flatten()
-#         ids = client.persist(ids)
-
-#         # if os.path.isfile("ids.csv"):
-#         #     ids = cache_bag("ids.csv")
-#         # else:
-#         #     save_bag(ids, "ids.csv")
-#         # ids = await client.compute(ids)
-#         # ids = db.from_sequence(ids)
-
-#         metadata = ids.map(get_metadata)
-#         metadata = client.persist(metadata)
-
-#         # metadata = metadata.repartition(1)
-
-#         # if os.path.isfile("metadata.csv"):
-#         #     metadata = cache_bag("metadata.csv")
-#         # else:
-#         #     metadata = save_bag(metadata, "metadata.csv")
-
-#         # metadata.take(1)
-#         # metadata = await client.compute(metadata)
-#         # metadata = db.from_sequence(metadata)
-#         # breakpoint()
-
-#         metadata = client.compute(metadata)
-
-#         progress(metadata)
-#         metadata = await metadata
-#     return metadata
-
-
 async def get_client():
-    # try:
-    #     cluster = await SLURMCluster(
-    #         memory="16GB", walltime="12:00:00", cores=1, asynchronous=True
-    #     )
-    #     cluster.scale(8)
-    # except:
     cluster = LocalCluster(
         memory_limit="32GB", threads_per_worker=128, asynchronous=True
     )
     client = Client(cluster)
     return client
 
-
-# # @delayed
-# async def cache(data, file):
-#     if not os.path.isfile(file):
-#         db.from_sequence(data).to_dataframe().to_csv(file)
-#         return data
-#     else:
-#         return dd.read_csv(file).to_bag().compute()
-
-
-# @delayed
-# def read_csv(file):
-#     return dd.read_csv(file).iloc[:, 1].to_bag()
-
-
-# @delayed
-# def read_csv(x, file, col):
-#     bag = db.from_sequence(x)
-#     bag = x
-#     # file = name + ".csv"
-
-#     if os.path.exists(file + "/"):
-#         cache_bag = dd.read_csv(file + "/*")[col].to_bag()
-#         diff = db.from_sequence(set(x) - set(cache_bag))
-#         bag = diff
-#         bag = list(set(x) - set(cache_bag))
-#     return bag
-
-
-# @delayed
 def read_csv(filename):
     return pd.read_csv(filename).iloc[:,1].to_list()
     return list(dd.read_csv(filename).iloc[:, 1].to_bag())
 
 
-# @delayed
-# def write_csv(x, file):
-#     if x != []:
-#         # TODO Check logic
-#         bag = db.from_sequence(x)
-#         bag.to_dataframe().to_csv(file)
-
-#     return list(dd.read_csv(file + "/*")[file].to_bag())
-
-#     # bag = db.from_sequence(x)
-#     # bag.to_dataframe().to_csv(file)
-#     # return bag
-
-
-
 def write_csv(x, file):
-    bag = db.from_sequence(x)
     if x != []:
-        print("Writing to cache")
-        bag.repartition(1).to_dataframe().to_csv(file, single_file=True)
+        # print("Writing to cache")
+        db.from_sequence(x).repartition(1).to_dataframe().to_csv(file, single_file=True)
+        # x = read_csv(file)
     return x
 
 
-# async def cache(file, bag, client):
-#     if os.path.isfile(file):
-#         bag = read_csv(file + "*.csv")
-#     if not os.path.isfile(file):
-#         bag = write_csv(bag, file)
-#     return await client.compute(bag)
-
-
-async def cache(file, bag, client):
+def cache(file, bag, client):
     if os.path.isfile(file):
         print("Reading from cache")
         x = delayed(read_csv)(file)
@@ -627,8 +431,7 @@ async def cache(file, bag, client):
         print(f"Processing {file}")
         x = delayed(write_csv)(bag,file)
     x = client.persist(x)
-    # progress(x)
-    x = await client.compute(x, on_error="skip")
+    x = client.compute(x).result()
     return db.from_sequence(x)
 
 
@@ -642,150 +445,53 @@ async def a_read_csv(file, col, bag, client):
     x = read_csv(bag, file, col)
     x = await client.compute(x)
     return db.from_sequence(x)
-    # return await read_csv(bag, file).compute()
 
 
-# def mapper(index, index_name, var_name, fn, *args, **kwargs):
-#     var = fn(index, *args, **kwargs)
-#     return [{index: x} for x in var]
 
+# The sleep and retry is to handle the case where the file is being written to disk and the read_csv function is called before the file is written, causing an error, race condition
+@delayed
+def dask_read_csv(filename: str):
+    for _ in range(10):
+        try:
+            return read_csv(filename)
+        except:
+            time.sleep(0.01)
+    raise Exception("Failed to read file")
 
-# def screen2plate(screen):
-#     col = "screen_id"
-#     folder = "cache/plate.csvs"
-#     filename = f"{folder}/{screen}.csv"
-
+# @delayed
+# def delayed_cache(result,filename):
 #     if not os.path.isfile(filename):
-#         x = idr_funs.get_omero_children_id(screen, field="Screen")
-#         db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
+#         return delayed(write_csv)(result, filename)
 #     else:
-#         x = read_csv(filename)
-#         # x = pd.read_csv(filename).iloc[:,1].to_list()
-#         # x = dd.read_csv(filename).repartition(1).iloc[:, 1].to_bag().compute()
-#     return x
-
-
-# def screen2screen_id(screen):
-#     col = "screen"
-#     folder = "cache/screen_id.csvs"
-#     filename = f"{folder}/{screen}.csv"
-
-#     if not os.path.isfile(filename):
-#         try:
-#             x = [screen_to_id(screen)]
-#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-#         except:
-#             x = [None]
-#     else:
-#         x = read_csv(filename)
-#         # x = pd.read_csv(filename).iloc[:,1].to_list()
-#     return x 
-
-
-# def plate2well(plate):
-
-#     col = "plate_id"
-#     folder = "cache/well.csvs"
-#     filename = f"{folder}/{plate}.csv"
-
-#     if not os.path.isfile(filename):
-#         try:
-#             x = idr_funs.get_omero_children_id(plate, field="Plate")
-#             # pd.DataFrame({col:x}).to_csv(filename)
-#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-#         except:
-#             x = [None]
-#     else:
-#         x = read_csv(filename)
-#         # x = pd.read_csv(filename).iloc[:,1].to_list()
-#     return x
-
-
-# def well2image(well):
-#     col = "well_id"
-#     folder = "cache/image.csvs"
-#     filename = f"{folder}/{well}.csv"
-
-#     if not os.path.isfile(filename):
-#         try:
-#             x = well_id_to_image_ids(well)
-#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-#         except:
-#             x = [None]
-#     else:
-#         x = read_csv(filename)
-#         # x = pd.read_csv(filename).iloc[:,1].to_list()
-#     return x
-
-
-# def image2metadata(image_id):
-#     col = "image_id"
-#     folder = "cache/metadata.csvs"
-#     filename = f"{folder}/{image_id}.csv"
-
-#     if not os.path.isfile(filename):
-#         try:
-#             x = [get_metadata(image_id)]
-#             db.from_sequence(x).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-#         except:
-#             x = [None]
-#     else:
-#         x = read_csv(filename)
-#         # x = pd.read_csv(filename).iloc[:,1].to_list()
-#     return x
-
-
-# # def cache2disk(fn):
-# #     @wraps(fn)
-# #     def inner(*args, **kwargs):
-# #         if os.path.isfile(id):
-# #             return dd.read_csv(id).to_bag().compute()
-# #         else:
-# #             return fn(*args, **kwargs)
-
-# #     return inner
-
-
-from functools import wraps
+#         return delayed(read_csv)(filename)
+#     return result
 
 def cache_to_disk(folder):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             filename = f"{folder}/{args[0]}.csv"
-            
+            result = delayed(func)(*args, **kwargs)
             if not os.path.isfile(filename):
-                try:
-                    # Attempt to execute the function and save the result
-                    result = func(*args, **kwargs)
-                    db.from_sequence(result).repartition(1).to_dataframe().to_csv(filename, single_file=True)
-                    # pd.DataFrame(result).to_csv(filename, index=False)
-                except Exception as e:
-                    # Handle exceptions by logging or other means
-                    print(f"An error occurred: {e}")
-                    result = [None]  # Ensure consistent return type
-                return result
+                result = delayed(func)(*args, **kwargs)
+                result = delayed(write_csv)(result, filename)
             else:
-                try:
-                    # Attempt to read the cached file
-                    return pd.read_csv(filename).iloc[:,1].to_list()
-                except Exception as e:
-                    # Handle file read errors
-                    print(f"Error reading the file: {e}")
-                    return [None]  # Return a default value if reading fails
+                result = dask_read_csv(filename)
+            return db.from_delayed(result)
         
         return wrapper
     return decorator
-
-# Applying the updated decorator
-@cache_to_disk("cache/plate.csvs")
-def screen2plate(screen):
-    return idr_funs.get_omero_children_id(screen, field="Screen")
 
 
 @cache_to_disk("cache/screen_id.csvs")
 def screen2screen_id(screen):
     return [screen_to_id(screen)]
+
+
+@cache_to_disk("cache/plate_id.csvs")
+def screen2plate(screen_id):
+    return idr_funs.get_omero_children_id(screen_id, field="Screen")
+
 
 @cache_to_disk("cache/well.csvs")
 def plate2well(plate):
@@ -800,28 +506,24 @@ def image2metadata(image_id):
     return [get_metadata(image_id)]
 
 
-async def process():
+async def a_process():
     if "SLURM_JOB_ID" in os.environ:
         cluster = SLURMCluster(
-            memory="16GB", walltime="24:00:00", cores=32, asynchronous=True
+            memory="16GB", walltime="24:00:00", cores=32, asynchronous=False
         )
-        # cluster.adapt(maximum_jobs=64)
         cluster.scale(64)
     else:
         cluster = LocalCluster(
-            memory_limit="32GB", threads_per_worker=128, asynchronous=True
+            memory_limit="32GB", threads_per_worker=32, asynchronous=True
         )
     print(cluster)
-    # The logic should be that the read_csv culling needs to happen before the mapping operations.
-    # This means the CSVs need the screen_name and the screen_id
-    #
 
     async with Client(cluster, asynchronous=True) as client:
         print(client)
         screens = await get_screens()
         screens = await client.compute(screens, on_error="skip")
         screens = db.from_sequence(screens)
-
+        
         print("screens_ids")
         screen_ids = screens.map(screen2screen_id)
         screen_ids = screen_ids.flatten()
@@ -848,78 +550,58 @@ async def process():
         metadata = await cache("cache/metadata.csv", metadata, client)
         result = metadata
 
-        # print(client)
-        # screens = await get_screens()
-        # # screens = await a_read_csv("screen_ids", "screens", screens, client)
-
-        # print("screens_ids")
-        # screen_ids = screens.map(
-        #     lambda x: {"screens": x, "screen_ids": screen_to_id(x)}
-        # )
-        # screen_ids = await a_write_csv("screen_ids", screen_ids, client)
-
-        # print("plate_ids")
-        # # screen_ids = await a_read_csv("plate_ids", "screen_ids", screen_ids, client)
-        # print(await client.compute(screen_ids).result())
-        # plate_ids = screen_ids.map(
-        #     lambda x: [
-        #         {"screen_ids": x, "plate_ids": var}
-        #         for var in idr_funs.get_omero_children_id(x, field="Screen")
-        #     ],
-        # )
-        # # print(await client.compute(plate_ids).result())
-        # plate_ids = plate_ids.flatten()
-        # # print(await client.compute(plate_ids).result())
-        # plate_ids = await a_write_csv("plate_ids", plate_ids, client)
-
-        # print("well_ids")
-        # # plate_ids = await a_read_csv("well_ids", "plate_ids", well_ids, client)
-        # well_ids = plate_ids.map(
-        #     lambda x: [
-        #         {"plate_ids": x, "well_ids": var}
-        #         for var in idr_funs.get_omero_children_id(x, field="Plate")
-        #     ]
-        # )
-        # well_ids = well_ids.flatten(compute=False)
-        # well_ids = await a_write_csv("well_ids.csv", well_ids, client)
-
-        # print("ids")
-        # # well_ids = await a_read_csv("ids", "well_ids", well_ids, client)
-        # ids = well_ids.map(
-        #     lambda x: [{"well_ids": x, "ids": var} for var in well_id_to_image_ids(x)]
-        # )
-        # ids = ids.flatten()
-        # ids = await a_write_csv("ids.csv", ids, client)
-
-        # print("metadata")
-        # # ids = await a_read_csv("metadata", "ids", ids, client)
-        # metadata = ids.map(get_metadata)
-        # metadata = await a_write_csv("metadata.csv", metadata, client)
-
     return result
 
 
+
+def process():
+    if "SLURM_JOB_ID" in os.environ:
+        cluster = SLURMCluster(
+            memory="16GB", walltime="24:00:00", cores=32,
+        )
+        cluster.scale(64)
+    else:
+        cluster = LocalCluster(
+            memory_limit="32GB", threads_per_worker=32,
+        )
+    print(cluster)
+
+    with Client(cluster) as client:
+        print(client)
+        screens = get_screens()
+        screens = client.persist(screens)
+        screens = db.from_sequence(screens)
+        
+        print("screens_ids")
+        screen_ids = screens.map(screen2screen_id)
+        screen_ids = screen_ids.flatten()
+        screen_ids = cache("cache/screen_ids.csv", screen_ids, client)
+
+        print("plate_ids")
+        plate_ids = screen_ids.map(screen2plate)
+        plate_ids = plate_ids.flatten()
+        plate_ids = cache("cache/plate_ids.csv", plate_ids, client)
+
+        print("well_ids")
+        well_ids = plate_ids.map(plate2well)
+        well_ids = well_ids.flatten()
+        well_ids = cache("cache/well_ids.csv", well_ids, client)
+
+        print("ids")
+        ids = well_ids.map(well2image)
+        ids = ids.flatten()
+        ids = cache("cache/ids.csv", ids, client)
+
+        print("metadata")
+        metadata = ids.map(image2metadata)
+        metadata = metadata.flatten()
+        metadata = cache("cache/metadata.csv", metadata, client)
+        result = metadata
+
+    return result
+
 if __name__ == "__main__":
-
-    result = asyncio.run(process())
+    
+    result = process()
+    # result = asyncio.run(process())
     print(result)
-    # screens = asyncio.run(screens())
-    # screen_ids = asyncio.run(screen_ids(screens))
-    # plate_ids = asyncio.run(plate_ids(screen_ids))
-    # well_ids = asyncio.run(well_ids(plate_ids))
-    # image_ids = asyncio.run(image_ids(well_ids))
-    # metadata = asyncio.run(metadata(image_ids))
-
-    # pd.DataFrame(metadata).to_csv("metadata.csv")
-
-
-# if __name__ == "__main__":
-#     # client = Client()  # This will start a local scheduler and workers
-#     client = Client(
-#         n_workers=8,
-#         threads_per_worker=64,
-#     )
-
-#     # print(client)  # This will provide the dashboard link and other details
-#     process()
-#     # client.close()
